@@ -270,46 +270,42 @@ export default function Header() {
               />
             </div>
             
-            <Link to="/cart">
-              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full hover:bg-muted">
-                <ShoppingCart className="h-5 w-5 text-foreground" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow animate-in scale-in duration-200">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
+            {userToken && (
+              <>
+                <Link to="/cart">
+                  <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full hover:bg-muted">
+                    <ShoppingCart className="h-5 w-5 text-foreground" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow animate-in scale-in duration-200">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Button>
+                </Link>
 
-            {userToken ? (
-              <div className="relative group py-2">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted flex items-center justify-center font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/20">
-                  {(userName || "C").charAt(0).toUpperCase()}
-                </Button>
-                <div className="absolute right-0 top-full mt-1 w-40 rounded-xl bg-white border border-gray-200/90 shadow-xl p-1.5 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-500 border-b border-gray-100 mb-1 truncate">
-                    {userName || "Customer"}
+                <div className="relative group py-2">
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted flex items-center justify-center font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/20">
+                    {(userName || "C").charAt(0).toUpperCase()}
+                  </Button>
+                  <div className="absolute right-0 top-full mt-1 w-40 rounded-xl bg-white border border-gray-200/90 shadow-xl p-1.5 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="px-3 py-1.5 text-[10px] font-bold text-slate-500 border-b border-gray-100 mb-1 truncate">
+                      {userName || "Customer"}
+                    </div>
+                    <Link
+                      to="/dashboard"
+                      className="w-full block text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors mb-0.5"
+                    >
+                      My Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-red-650 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Sign Out
+                    </button>
                   </div>
-                  <Link
-                    to="/dashboard"
-                    className="w-full block text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors mb-0.5"
-                  >
-                    My Dashboard
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-3 py-2 text-xs font-semibold text-red-650 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                  >
-                    Sign Out
-                  </button>
                 </div>
-              </div>
-            ) : (
-              <Link to="/login">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted">
-                  <User className="h-5 w-5 text-foreground" />
-                </Button>
-              </Link>
+              </>
             )}
 
             <Link to="/contact" className="hidden xl:inline-flex">

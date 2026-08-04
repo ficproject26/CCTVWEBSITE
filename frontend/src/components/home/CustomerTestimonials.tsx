@@ -152,79 +152,80 @@ export default function CustomerTestimonials() {
         </div>
 
         {/* --- DESKTOP VIEW: Grid with Pagination (Paginated items) --- */}
-        <div className="hidden sm:block relative">
-          
-          {/* Navigation Arrow - Left */}
-          <button
-            onClick={handlePrev}
-            className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
-            aria-label="Previous Testimonials"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
+        <div className="hidden sm:block">
+          <div className="flex items-center justify-center gap-4 lg:gap-6">
+            {/* Navigation Arrow - Left */}
+            <button
+              onClick={handlePrev}
+              className="z-20 shrink-0 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
+              aria-label="Previous Testimonials"
+            >
+              <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
+            </button>
 
-          {/* Navigation Arrow - Right */}
-          <button
-            onClick={handleNext}
-            className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
-            aria-label="Next Testimonials"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+            {/* 4 Testimonials Cards Grid */}
+            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {displayedTestimonials.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white border border-gray-100/90 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-red-100 transition-all duration-300 flex flex-col justify-between space-y-3.5 relative overflow-hidden group min-h-[220px]"
+                >
+                  {/* Watermark Quotation Icon */}
+                  <div className="absolute top-2.5 right-3 text-4xl text-red-100/50 font-serif select-none pointer-events-none group-hover:text-red-200/70 transition-colors">
+                    “
+                  </div>
 
-          {/* 4 Testimonials Cards Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {displayedTestimonials.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-100/90 rounded-2xl p-4.5 shadow-sm hover:shadow-md hover:border-red-100 transition-all duration-300 flex flex-col justify-between space-y-3.5 relative overflow-hidden group min-h-[220px]"
-              >
-                {/* Watermark Quotation Icon */}
-                <div className="absolute top-2.5 right-3 text-4xl text-red-100/50 font-serif select-none pointer-events-none group-hover:text-red-200/70 transition-colors">
-                  “
-                </div>
+                  <div className="space-y-3 relative z-10">
+                    {/* User Profile Info Header */}
+                    <div className="flex items-center gap-2.5 pr-4">
+                      <img
+                        src={item.avatar}
+                        alt={item.name}
+                        className="w-10 h-10 max-w-[40px] max-h-[40px] rounded-full object-cover border-2 border-red-100 shadow-sm shrink-0 group-hover:scale-105 transition-transform"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-extrabold text-xs text-slate-900 leading-snug truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                          {item.role}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="space-y-3 relative z-10">
-                  {/* User Profile Info Header */}
-                  <div className="flex items-center gap-2.5 pr-4">
-                    <img
-                      src={item.avatar}
-                      alt={item.name}
-                      className="w-10 h-10 max-w-[40px] max-h-[40px] rounded-full object-cover border-2 border-red-100 shadow-sm shrink-0 group-hover:scale-105 transition-transform"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-extrabold text-xs text-slate-900 leading-snug truncate">
-                        {item.name}
-                      </h3>
-                      <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                        {item.role}
-                      </p>
+                    {/* 5-Star Rating */}
+                    <div className="flex items-center gap-0.5 text-amber-400">
+                      {[...Array(item.rating)].map((_, i) => (
+                        <Star key={i} className="h-3.5 w-3.5 fill-amber-400 stroke-amber-400" />
+                      ))}
+                    </div>
+
+                    {/* Comment Quote Text */}
+                    <p className="text-xs text-slate-600 font-normal leading-relaxed">
+                      {item.comment}
+                    </p>
+                  </div>
+
+                  {/* Time Badge at Bottom */}
+                  <div className="pt-2.5 border-t border-gray-100/80 relative z-10">
+                    <div className="inline-flex items-center gap-1.5 text-[#ff3b30] text-[10px] font-bold bg-red-50/80 px-2 py-0.5 rounded-full border border-red-100/60">
+                      <ShieldCheck className="h-3 w-3 text-[#ff3b30]" />
+                      <span>{item.timeAgo}</span>
                     </div>
                   </div>
 
-                  {/* 5-Star Rating */}
-                  <div className="flex items-center gap-0.5 text-amber-400">
-                    {[...Array(item.rating)].map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-amber-400 stroke-amber-400" />
-                    ))}
-                  </div>
-
-                  {/* Comment Quote Text */}
-                  <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                    {item.comment}
-                  </p>
                 </div>
+              ))}
+            </div>
 
-                {/* Time Badge at Bottom */}
-                <div className="pt-2.5 border-t border-gray-100/80 relative z-10">
-                  <div className="inline-flex items-center gap-1.5 text-[#ff3b30] text-[10px] font-bold bg-red-50/80 px-2 py-0.5 rounded-full border border-red-100/60">
-                    <ShieldCheck className="h-3 w-3 text-[#ff3b30]" />
-                    <span>{item.timeAgo}</span>
-                  </div>
-                </div>
-
-              </div>
-            ))}
+            {/* Navigation Arrow - Right */}
+            <button
+              onClick={handleNext}
+              className="z-20 shrink-0 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
+              aria-label="Next Testimonials"
+            >
+              <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
+            </button>
           </div>
 
           {/* Carousel Pagination Dots Indicator */}

@@ -14,7 +14,7 @@ function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
 }
 
 export default function FloatingButtons() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const contactTouchpoints = [
     {

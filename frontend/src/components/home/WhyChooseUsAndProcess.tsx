@@ -179,8 +179,8 @@ export function WhyChooseUsSection() {
 
             <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl group bg-[#0d1322]">
               <img
-                src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80"
-                alt="CCTV Security Camera Array"
+                src="/images/ip_camera.png"
+                alt="CCTV Security Camera"
                 className="w-full h-36 sm:h-52 object-cover group-hover:scale-105 transition-transform duration-500 brightness-90 contrast-125"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#070b14] via-[#070b14]/20 to-transparent"></div>
