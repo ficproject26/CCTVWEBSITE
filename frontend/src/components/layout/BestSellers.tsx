@@ -43,7 +43,7 @@ export default function BestSellers() {
               originalPrice: item.originalPrice || item.price,
               rating: item.rating || 4.5,
               reviews: item.reviewsCount || Math.floor(Math.random() * 100) + 10,
-              image: item.image,
+              image: item.image ? item.image.replace('http://localhost:5000', import.meta.env.VITE_API_URL || 'http://localhost:5000') : '',
               badge: item.badge,
               isNew: item.isNew,
               specs: item.specs || []

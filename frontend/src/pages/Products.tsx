@@ -502,7 +502,7 @@ export default function Products() {
               stockCount: item.stock || 20,
               warranty: '2 Years Warranty',
               freeDelivery: true,
-              image: item.image,
+              image: item.image ? item.image.replace('http://localhost:5000', import.meta.env.VITE_API_URL || 'http://localhost:5000') : '',
               resolution: item.specs?.[0] || 'HD Resolution',
               specs: item.specs || [],
             };

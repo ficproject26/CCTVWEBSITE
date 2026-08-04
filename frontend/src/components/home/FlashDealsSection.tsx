@@ -101,7 +101,7 @@ export default function FlashDealsSection() {
             discount: item.badge || '-20%',
             rating: item.rating || 4.5,
             reviews: item.reviewsCount || 10,
-            image: item.image
+            image: item.image ? item.image.replace('http://localhost:5000', import.meta.env.VITE_API_URL || 'http://localhost:5000') : ''
           }));
           setDeals(formatted);
         }
