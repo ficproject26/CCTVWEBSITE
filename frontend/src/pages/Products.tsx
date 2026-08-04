@@ -1367,18 +1367,18 @@ export default function Products() {
                       </div>
 
                       {/* Card Footer Action: Side-by-Side Cart & Buy Now */}
-                      <div className="pt-2 flex flex-col 2xl:flex-row gap-2">
+                      <div className="pt-2 flex flex-row items-center gap-1.5 sm:gap-2">
                         <button
                           onClick={() => handleAddToCart(product)}
-                          className="flex-1 h-8 sm:h-9 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-350 text-slate-700 text-[10px] sm:text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm hover:scale-[1.02] duration-200"
+                          className="h-8 w-8 sm:flex-1 sm:h-9 rounded-lg sm:rounded-xl bg-red-50 sm:bg-white border-0 sm:border border-slate-200 hover:bg-red-100 sm:hover:bg-slate-50 text-[#ff3b30] sm:text-slate-700 text-[10px] sm:text-xs font-extrabold flex items-center justify-center gap-1 transition-all shrink-0"
                           title="Add to Cart"
                         >
-                          <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                          <span>Cart</span>
+                          <ShoppingCart className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                          <span className="hidden sm:inline">Cart</span>
                         </button>
                         <button
                           onClick={() => handleBuyNow(product)}
-                          className="flex-1 h-8 sm:h-9 rounded-xl bg-[#ff3b30] hover:bg-red-600 text-white text-[10px] sm:text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm hover:scale-[1.02] duration-200"
+                          className="flex-1 h-8 sm:h-9 rounded-lg sm:rounded-xl bg-[#ff3b30] hover:bg-red-600 text-white text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm sm:hover:scale-[1.02] duration-200"
                         >
                           <span>Buy Now</span>
                         </button>
