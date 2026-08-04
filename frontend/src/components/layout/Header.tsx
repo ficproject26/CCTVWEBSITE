@@ -9,6 +9,8 @@ import {
   Mail,
   MapPin,
   ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +49,7 @@ const navItems = [
 
 export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -248,6 +251,16 @@ export default function Header() {
 
           {/* Right Actions: Search, Cart, User & CTA */}
           <div className="flex items-center gap-3 shrink-0">
+            {/* Mobile Menu Toggle */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="md:hidden h-9 w-9 rounded-full hover:bg-muted"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
+            </Button>
+            
             <div className="hidden lg:flex relative w-56 items-center">
               <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
               <Input
@@ -307,6 +320,44 @@ export default function Header() {
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/40 shadow-xl z-[45] animate-in slide-in-from-top-4 duration-200">
+          <nav className="flex flex-col p-4 px-6 space-y-3">
+            {navItems.map((item) => (
+              <div key={item.name} className="flex flex-col">
+                <Link 
+                  to={item.path} 
+                  className="text-[15px] font-bold text-foreground py-2 border-b border-gray-100/50 hover:text-red-500 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+                {item.subLinks && (
+                  <div className="pl-4 flex flex-col mt-2 space-y-2 border-l-2 border-red-100 ml-1">
+                    {item.subLinks.map((sub) => (
+                      <Link
+                        key={sub.name}
+                        to={sub.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="text-xs font-semibold text-muted-foreground hover:text-red-500 py-1 transition-colors pl-2"
+                      >
+                        {sub.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="pt-4 pb-2 block w-full">
+              <Button className="w-full bg-red-500 hover:bg-red-600 text-white font-bold h-10 rounded-full shadow-md">
+                Get Quote / Contact Us
+              </Button>
+            </Link>
+          </nav>
+        </div>
+      )}
     </div>
   );
 }
