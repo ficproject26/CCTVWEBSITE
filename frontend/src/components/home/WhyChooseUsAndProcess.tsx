@@ -168,7 +168,7 @@ export function WhyChooseUsSection() {
               </span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none text-white">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none text-white">
               WHY CHOOSE <br />
               <span className="text-[#ff3b30]">SK TECHNOLOGY?</span>
             </h2>
@@ -181,14 +181,14 @@ export function WhyChooseUsSection() {
               <img
                 src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80"
                 alt="CCTV Security Camera Array"
-                className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500 brightness-90 contrast-125"
+                className="w-full h-36 sm:h-52 object-cover group-hover:scale-105 transition-transform duration-500 brightness-90 contrast-125"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#070b14] via-[#070b14]/20 to-transparent"></div>
               
               <div className="absolute bottom-4 left-4 z-10">
-                <div className="bg-[#070b14]/80 backdrop-blur-md border border-slate-700/80 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-xl">
-                  <Shield className="h-4 w-4 text-[#ff3b30]" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                <div className="bg-[#070b14]/80 backdrop-blur-md border border-slate-700/80 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl flex items-center gap-1.5 sm:gap-2 shadow-xl">
+                  <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#ff3b30]" />
+                  <span className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wider">
                     PRO SURVEILLANCE SYSTEMS
                   </span>
                 </div>
@@ -198,7 +198,7 @@ export function WhyChooseUsSection() {
             <div className="pt-2">
               <Link
                 to="/contact"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#ff3b30] hover:bg-[#e03126] text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-xl shadow-lg shadow-red-600/30 hover:shadow-red-600/50 transition-all duration-300 transform hover:-translate-y-0.5"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#ff3b30] hover:bg-[#e03126] text-white font-extrabold text-xs uppercase tracking-wider px-6 py-3 sm:px-8 sm:py-3.5 rounded-xl shadow-lg shadow-red-600/30 hover:shadow-red-600/50 transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 <span>GET A FREE QUOTE</span>
                 <ArrowRight className="h-4 w-4" />
