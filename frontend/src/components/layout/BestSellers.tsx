@@ -29,7 +29,7 @@ export default function BestSellers() {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products')
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data) {

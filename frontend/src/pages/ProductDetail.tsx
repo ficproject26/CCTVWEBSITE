@@ -158,7 +158,7 @@ export default function ProductDetail() {
   useEffect(() => {
     setLoading(true);
     // Attempt live fetch
-    fetch(`http://localhost:5000/api/products/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Not found");
         return res.json();

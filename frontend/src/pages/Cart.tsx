@@ -151,7 +151,7 @@ export default function Cart() {
     setCheckoutOpen(true);
 
     // Try to load cached profile address
-    fetch(`http://localhost:5000/api/auth/profile?email=${encodeURIComponent(email)}`)
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile?email=${encodeURIComponent(email)}`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data) {
@@ -183,7 +183,7 @@ export default function Cart() {
     const fullAddress = `${checkoutForm.address}, ${checkoutForm.state} - ${checkoutForm.zipcode} [Service: ${checkoutForm.serviceType === 'DELIVERY_INSTALLATION' ? 'DELIVERY + INSTALLATION' : 'ONLY PRODUCT DELIVERY'}]`;
 
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

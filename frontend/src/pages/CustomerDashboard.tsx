@@ -193,7 +193,7 @@ export default function CustomerDashboard() {
     if (!userEmail) return;
     const syncProfile = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/auth/profile?email=${encodeURIComponent(userEmail)}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile?email=${encodeURIComponent(userEmail)}`);
         const data = await res.json();
         if (data.success && data.data) {
           const u = data.data;
@@ -223,13 +223,13 @@ export default function CustomerDashboard() {
       setIsLoading(true);
       try {
         // Fetch orders filtered by this customer's email (server-side)
-        const ordersRes = await fetch(`http://localhost:5000/api/orders?email=${encodeURIComponent(userEmail)}`);
+        const ordersRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders?email=${encodeURIComponent(userEmail)}`);
         const ordersData = await ordersRes.json();
         if (ordersData.success && Array.isArray(ordersData.data)) {
           setDbOrders(ordersData.data);
         }
 
-        const dashRes = await fetch("http://localhost:5000/api/dashboard");
+        const dashRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard`);
         const dashData = await dashRes.json();
         if (dashData.success && dashData.data) {
           const allReqs = dashData.data.serviceRequests || [];
@@ -264,7 +264,7 @@ export default function CustomerDashboard() {
     setServiceSuccessMsg("");
 
     try {
-      const dashRes = await fetch("http://localhost:5000/api/dashboard");
+      const dashRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard`);
       const dashData = await dashRes.json();
       
       if (dashData.success && dashData.data) {
@@ -294,7 +294,7 @@ export default function CustomerDashboard() {
           ...(dashboardState.notifications || [])
         ];
 
-        const updateRes = await fetch("http://localhost:5000/api/dashboard", {
+        const updateRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -338,7 +338,7 @@ export default function CustomerDashboard() {
     setProfileSaving(true);
     setProfileMsg("");
     try {
-      const res = await fetch("http://localhost:5000/api/auth/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userEmail, name: profileName, phone: profilePhone })
@@ -377,7 +377,7 @@ export default function CustomerDashboard() {
     }
     setCpSaving(true);
     try {
-      const res = await fetch("http://localhost:5000/api/auth/change-password", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/change-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userEmail, currentPassword: cpCurrent, newPassword: cpNew })

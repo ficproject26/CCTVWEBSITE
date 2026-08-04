@@ -299,7 +299,7 @@ export const JobsApiService = {
     }
 
     try {
-      const url = `http://localhost:5000/api/jobs?technicianId=${techId}&status=${options.status !== 'ALL' ? options.status : ''}&search=${options.searchQuery}`;
+      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs?technicianId=${techId}&status=${options.status !== 'ALL' ? options.status : ''}&search=${options.searchQuery}`;
       const res = await fetch(url);
       const resData = await res.json();
       const rawJobs = resData.data || [];
@@ -459,7 +459,7 @@ export const JobsApiService = {
 
   async updateJobStatus(jobId: string, status: JobStatus): Promise<Job> {
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
@@ -474,7 +474,7 @@ export const JobsApiService = {
 
   async uploadJobPhoto(jobId: string, photoUrl: string, caption: string, type: 'BEFORE' | 'AFTER'): Promise<Job> {
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -497,7 +497,7 @@ export const JobsApiService = {
 
   async completeJob(jobId: string, completionNotes: string, signatureData?: string): Promise<Job> {
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -515,7 +515,7 @@ export const JobsApiService = {
 
   async saveInspectionSummary(jobId: string, summary: InspectionSummary): Promise<Job> {
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -533,7 +533,7 @@ export const JobsApiService = {
 
   async addDailyReport(jobId: string, report: Omit<DailyReport, 'id' | 'createdAt'>): Promise<Job> {
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

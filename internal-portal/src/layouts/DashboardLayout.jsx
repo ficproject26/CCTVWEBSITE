@@ -22,7 +22,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     const fetchData = () => {
-      fetch('http://localhost:5000/api/dashboard')
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard`)
         .then(res => res.json())
         .then(resData => {
           if (resData.success && resData.data) {

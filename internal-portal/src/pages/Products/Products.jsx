@@ -177,7 +177,7 @@ export default function Products() {
   const products = useSelector(state => state.dashboard.products);
 
   React.useEffect(() => {
-    fetch('http://localhost:5000/api/products')
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`)
       .then(res => res.json())
       .then(data => {
         if (data.success && Array.isArray(data.data)) {
@@ -297,7 +297,7 @@ export default function Products() {
       isBestSeller: productForm.isBestSeller || false,
     };
 
-    fetch('http://localhost:5000/api/products', {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dbProduct)
@@ -429,7 +429,7 @@ export default function Products() {
               key={prod.id} 
               prod={prod} 
               onDelete={(id) => {
-                fetch(`http://localhost:5000/api/products/${id}`, {
+                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/${id}`, {
                   method: 'DELETE',
                 })
                   .then(res => res.json())
@@ -754,7 +754,7 @@ export default function Products() {
                 isBestSeller: productForm.isBestSeller || false,
               };
 
-              fetch(`http://localhost:5000/api/products/${editingProduct.id}`, {
+              fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/${editingProduct.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dbProduct)
