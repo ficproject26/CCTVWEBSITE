@@ -15,6 +15,11 @@ function getFallbackSrc(category) {
       return '/cp_plus_nvr.png';
     case 'Hard Disk':
       return '/surveillance_hdd.png';
+    case 'SSD':
+      return '/surveillance_hdd.png';
+    case 'Pendrive':
+      return '/cctv_cable.png';
+    case 'HDMI Cables':
     case 'Cables':
     default:
       return '/cctv_cable.png';
@@ -189,6 +194,8 @@ export default function Products() {
                       item.category === 'nvr' ? 'NVR' :
                       item.category === 'dvr' ? 'DVR' :
                       item.category === 'harddisk' ? 'Hard Disk' :
+                      item.category === 'ssd' ? 'SSD' :
+                      item.category === 'pendrive' ? 'Pendrive' :
                       item.category === 'accessories' ? 'Cables' : item.category,
             model: item.specs?.[0] || 'Generic Model',
             price: item.price,
@@ -215,7 +222,7 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
 
-  const defaultCategories = ['IP Camera', 'Analog Camera', 'NVR', 'DVR', 'Hard Disk', 'Cables', 'Power Supply', 'Accessories', 'Tools'];
+  const defaultCategories = ['IP Camera', 'Analog Camera', 'NVR', 'DVR', 'Hard Disk', 'SSD', 'Pendrive', 'Cables', 'HDMI Cables', 'Power Supply', 'Accessories', 'Tools'];
 
   const [productForm, setProductForm] = useState({ 
     name: '', 
@@ -279,6 +286,9 @@ export default function Products() {
     else if (c.includes('nvr')) dbCategory = 'nvr';
     else if (c.includes('dvr')) dbCategory = 'dvr';
     else if (c.includes('hard disk')) dbCategory = 'harddisk';
+    else if (c.includes('ssd')) dbCategory = 'ssd';
+    else if (c.includes('pendrive')) dbCategory = 'pendrive';
+    else if (c.includes('hdmi')) dbCategory = 'hdmi';
     else if (c.includes('cables') || c.includes('cable') || c.includes('accessory') || c.includes('accessories') || c.includes('power supply')) dbCategory = 'accessories';
 
     const dbProduct = {
@@ -403,7 +413,10 @@ export default function Products() {
             <option value="NVR">NVRs</option>
             <option value="DVR">DVRs</option>
             <option value="Hard Disk">Surveillance HDD</option>
+            <option value="SSD">SSD</option>
+            <option value="Pendrive">Pendrive</option>
             <option value="Cables">Cables</option>
+            <option value="HDMI Cables">HDMI Cables</option>
           </select>
 
           <button 
@@ -736,6 +749,9 @@ export default function Products() {
               else if (c.includes('nvr')) dbCategory = 'nvr';
               else if (c.includes('dvr')) dbCategory = 'dvr';
               else if (c.includes('hard disk')) dbCategory = 'harddisk';
+              else if (c.includes('ssd')) dbCategory = 'ssd';
+              else if (c.includes('pendrive')) dbCategory = 'pendrive';
+              else if (c.includes('hdmi')) dbCategory = 'hdmi';
               else if (c.includes('cables') || c.includes('cable') || c.includes('accessory') || c.includes('accessories') || c.includes('power supply')) dbCategory = 'accessories';
 
               const dbProduct = {

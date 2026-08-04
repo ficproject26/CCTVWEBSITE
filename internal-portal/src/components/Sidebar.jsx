@@ -47,6 +47,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     { name: 'Service Requests', path: '/admin/service-requests', icon: FiTool },
     { name: 'Queries', path: '/admin/queries', icon: FiHelpCircle },
     { name: 'Products', path: '/admin/products', icon: FiBox },
+    { name: 'Categories', path: '/admin/categories', icon: FiGrid },
     { name: 'Banners', path: '/admin/banners', icon: FiImage },
     { name: 'Brands', path: '/admin/brands', icon: FiAward },
     { name: 'Inventory', path: '/admin/inventory', icon: FiPackage },

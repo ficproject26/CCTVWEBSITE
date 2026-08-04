@@ -1,6 +1,7 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const categories = [
+const fallbackCategories = [
   {
     name: "CCTV Cameras",
     image: "/images/cctv_camera.png",
@@ -38,12 +39,34 @@ const categories = [
   },
   {
     name: "Alarm Systems",
-    image: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=400&q=80",
+    image: "/images/alarm_system.png",
     link: "/products?category=alarm",
   },
 ];
 
 export default function CategoryCirclesBar() {
+  const [categories, setCategories] = useState(fallbackCategories);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_URL}/api/categories?featured=true`);
+        const data = await res.json();
+        if (data.success && data.data && data.data.length > 0) {
+          const mappedCats = data.data.map((cat: any) => ({
+            name: cat.name,
+            image: cat.image,
+            link: `/products?category=${cat.slug}`,
+          }));
+          setCategories(mappedCats);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dynamic categories, using fallback.", err);
+      }
+    };
+    fetchCategories();
+  }, []);
   return (
     <section className="py-8 bg-white border-b border-gray-100">
       <div className="container max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">

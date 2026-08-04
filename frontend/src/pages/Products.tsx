@@ -51,6 +51,9 @@ const categoryTree = [
   { id: "alarm", name: "Alarm Systems", count: 31 },
   { id: "networking", name: "Networking", count: 52 },
   { id: "kit", name: "Installation Kit", count: 15 },
+  { id: "ssd", name: "SSD", count: 0 },
+  { id: "pendrive", name: "Pendrive", count: 0 },
+  { id: "hdmi", name: "HDMI Cables", count: 0 },
 ];
 
 const brandsList = [
@@ -538,6 +541,9 @@ export default function Products() {
       { id: "alarm", name: "Alarm Systems", count: 0 },
       { id: "networking", name: "Networking", count: 0 },
       { id: "kit", name: "Installation Kit", count: 0 },
+      { id: "ssd", name: "SSD", count: 0 },
+      { id: "pendrive", name: "Pendrive", count: 0 },
+      { id: "hdmi", name: "HDMI Cables", count: 0 },
     ];
 
     productsList.forEach(prod => {

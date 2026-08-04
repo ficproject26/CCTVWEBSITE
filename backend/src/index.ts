@@ -9,6 +9,7 @@ import orderRoutes from './routes/orderRoutes';
 import authRoutes from './routes/authRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 import notificationRoutes from './routes/notificationRoutes';
+import categoryRoutes from './routes/categoryRoutes';
 import { seedDatabase } from './seed';
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Database connection & Server start (reloaded for active MongoDB)
 const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/cctv-ecommerce';
