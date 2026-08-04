@@ -3,7 +3,7 @@ import { useState } from "react";
 // Official SVG Brand Logos matching user reference screenshot
 function HikvisionLogo() {
   return (
-    <svg className="h-7 w-auto" viewBox="0 0 160 36" fill="none">
+    <svg className="h-5 sm:h-7 w-auto" viewBox="0 0 160 36" fill="none">
       <text x="2" y="26" fill="#e53935" fontFamily="sans-serif" fontWeight="900" fontStyle="italic" fontSize="24" letterSpacing="1">
         HIK
       </text>
@@ -16,7 +16,7 @@ function HikvisionLogo() {
 
 function DahuaLogo() {
   return (
-    <svg className="h-7 w-auto" viewBox="0 0 140 36" fill="none">
+    <svg className="h-5 sm:h-7 w-auto" viewBox="0 0 140 36" fill="none">
       <ellipse cx="18" cy="18" rx="14" ry="14" fill="#d32f2f" />
       <text x="12" y="25" fill="#ffffff" fontFamily="sans-serif" fontWeight="900" fontStyle="italic" fontSize="20">
         a
@@ -30,7 +30,7 @@ function DahuaLogo() {
 
 function CpPlusLogo() {
   return (
-    <svg className="h-8 w-auto" viewBox="0 0 160 40" fill="none">
+    <svg className="h-6 sm:h-8 w-auto" viewBox="0 0 160 40" fill="none">
       <path d="M4 12 L18 24 L4 36 Z" fill="#d32f2f" />
       <path d="M18 12 L4 24 L18 36 Z" fill="#d32f2f" />
       <text x="24" y="24" fill="#d32f2f" fontFamily="sans-serif" fontWeight="900" fontSize="18" letterSpacing="0.5">
@@ -45,7 +45,7 @@ function CpPlusLogo() {
 
 function UnvLogo() {
   return (
-    <svg className="h-7 w-auto" viewBox="0 0 110 36" fill="none">
+    <svg className="h-5 sm:h-7 w-auto" viewBox="0 0 110 36" fill="none">
       <path d="M8 8 C14 2 24 2 30 8" stroke="#d32f2f" strokeWidth="3.5" strokeLinecap="round" />
       <text x="4" y="28" fill="#0f172a" fontFamily="sans-serif" fontWeight="900" fontSize="26" letterSpacing="-1">
         unv
@@ -56,7 +56,7 @@ function UnvLogo() {
 
 function HoneywellLogo() {
   return (
-    <svg className="h-7 w-auto" viewBox="0 0 150 36" fill="none">
+    <svg className="h-5 sm:h-7 w-auto" viewBox="0 0 150 36" fill="none">
       <text x="2" y="26" fill="#ee2c2c" fontFamily="sans-serif" fontWeight="900" fontSize="24" letterSpacing="-0.5">
         Honeywell
       </text>
@@ -66,7 +66,7 @@ function HoneywellLogo() {
 
 function ImouLogo() {
   return (
-    <svg className="h-7 w-auto" viewBox="0 0 120 36" fill="none">
+    <svg className="h-5 sm:h-7 w-auto" viewBox="0 0 120 36" fill="none">
       <text x="2" y="26" fill="#ff7a00" fontFamily="sans-serif" fontWeight="900" fontSize="26" letterSpacing="-1">
         Imou
       </text>
@@ -77,7 +77,7 @@ function ImouLogo() {
 
 function TpLinkLogo() {
   return (
-    <svg className="h-7 w-auto" viewBox="0 0 140 36" fill="none">
+    <svg className="h-5 sm:h-7 w-auto" viewBox="0 0 140 36" fill="none">
       <path d="M8 12 H22 V20 H16 V28 H8 Z" fill="#00b4d8" />
       <circle cx="26" cy="16" r="4" fill="#00b4d8" />
       <text x="36" y="25" fill="#1e293b" fontFamily="sans-serif" fontWeight="800" fontSize="20">
@@ -89,7 +89,7 @@ function TpLinkLogo() {
 
 function EzvizLogo() {
   return (
-    <svg className="h-8 w-auto" viewBox="0 0 150 40" fill="none">
+    <svg className="h-6 sm:h-8 w-auto" viewBox="0 0 150 40" fill="none">
       <circle cx="10" cy="14" r="5" fill="#00b4d8" />
       <circle cx="20" cy="14" r="5" fill="#e52592" />
       <circle cx="10" cy="24" r="5" fill="#ffb703" />
@@ -157,7 +157,7 @@ export default function IndustryLeadersBar() {
                   onMouseLeave={() => setHoveredIndex(null)}
                   onTouchStart={() => setHoveredIndex(index)}
                   onTouchEnd={() => setHoveredIndex(null)}
-                  className="flex items-center shrink-0 border-r border-gray-200/90 pr-8 mr-8 cursor-pointer select-none"
+                  className="flex items-center shrink-0 border-r border-gray-200/90 pr-5 mr-5 sm:pr-8 sm:mr-8 cursor-pointer select-none"
                 >
                   <div
                     style={{ transition: "all 200ms ease-in-out" }}
