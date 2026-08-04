@@ -1,0 +1,381 @@
+{
+  "orders": [
+    {
+      "id": "ORD-1256",
+      "customer": "Rohan Malhotra",
+      "email": "rohan@malhotragroup.in",
+      "phone": "+91 98765 43210",
+      "type": "Cameras Installation",
+      "location": "Anna Nagar, Chennai",
+      "assignedTechnician": "Karthik Raja",
+      "status": "In Progress",
+      "date": "May 25, 2024",
+      "amount": 8750
+    },
+    {
+      "id": "ORD-1257",
+      "customer": "Subiksha Retailers",
+      "email": "ops@subiksharetails.com",
+      "phone": "+91 91234 56789",
+      "type": "AMC Service",
+      "location": "T. Nagar, Chennai",
+      "assignedTechnician": "Prakash Kumar",
+      "status": "Approved",
+      "date": "May 25, 2024",
+      "amount": 5000
+    },
+    {
+      "id": "ORD-1258",
+      "customer": "Dr. Vimal Clinic",
+      "email": "dr.vimal@healthclinic.org",
+      "phone": "+91 93456 78901",
+      "type": "Cameras Repair",
+      "location": "Velachery, Chennai",
+      "assignedTechnician": "Senthil Kumar",
+      "status": "Pending Approval",
+      "date": "May 25, 2024",
+      "amount": 4200
+    },
+    {
+      "id": "ORD-1259",
+      "customer": "Zenith IT Park",
+      "email": "facility@zenithit.com",
+      "phone": "+91 87654 32109",
+      "type": "CCTV Installation",
+      "location": "Porur, Chennai",
+      "assignedTechnician": "Unassigned",
+      "status": "Pending",
+      "date": "May 25, 2024",
+      "amount": 45000
+    },
+    {
+      "id": "ORD-1260",
+      "customer": "Greenwood Apartment",
+      "email": "society@greenwood.in",
+      "phone": "+91 76543 21098",
+      "type": "DVR Upgrade",
+      "location": "Adyar, Chennai",
+      "assignedTechnician": "Karthik Raja",
+      "status": "Completed",
+      "date": "May 24, 2024",
+      "amount": 12500
+    },
+    {
+      "id": "ORD-1261",
+      "customer": "Krishna Sweets",
+      "email": "billing@krishnasweets.com",
+      "phone": "+91 98877 66554",
+      "type": "System Audit",
+      "location": "Mylapore, Chennai",
+      "assignedTechnician": "Senthil Kumar",
+      "status": "Completed",
+      "date": "May 23, 2024",
+      "amount": 3500
+    }
+  ],
+  "technicians": [
+    {
+      "id": "TECH-01",
+      "name": "Karthik Raja",
+      "phone": "+91 94440 12345",
+      "email": "karthik.raja@sktech.com",
+      "status": "Busy",
+      "currentProject": "Zenith IT Park Installation",
+      "rating": 4.8,
+      "specialization": "IP Cameras & Networking"
+    },
+    {
+      "id": "TECH-02",
+      "name": "Prakash Kumar",
+      "phone": "+91 94440 67890",
+      "email": "prakash.k@sktech.com",
+      "status": "Available",
+      "currentProject": "None",
+      "rating": 4.6,
+      "specialization": "Analog Systems & Cabling"
+    },
+    {
+      "id": "TECH-03",
+      "name": "Senthil Kumar",
+      "phone": "+91 94440 54321",
+      "email": "senthil.k@sktech.com",
+      "status": "Offline",
+      "currentProject": "None",
+      "rating": 4.5,
+      "specialization": "DVR/NVR Troubleshooting"
+    },
+    {
+      "id": "TECH-04",
+      "name": "Ramesh Krishnan",
+      "phone": "+91 94440 98765",
+      "email": "ramesh.k@sktech.com",
+      "status": "Leave",
+      "currentProject": "None",
+      "rating": 4.7,
+      "specialization": "PTZ Cameras & Fiber Optics"
+    }
+  ],
+  "projects": [
+    {
+      "id": "PRJ-301",
+      "name": "Office - Main Branch",
+      "technician": "Karthik Raja",
+      "customer": "Kova Group Ltd",
+      "location": "Anna Nagar, Chennai",
+      "submissionDate": "May 24, 2024",
+      "status": "Approved",
+      "details": "4 Cameras, 1 DVR Setup",
+      "devicesCount": 5
+    },
+    {
+      "id": "PRJ-302",
+      "name": "Home - Residence",
+      "technician": "Prakash Kumar",
+      "customer": "Shri Murali",
+      "location": "Velachery, Chennai",
+      "submissionDate": "May 25, 2024",
+      "status": "Pending Approval",
+      "details": "2 Cameras, 1 NVR Setup",
+      "devicesCount": 3
+    },
+    {
+      "id": "PRJ-303",
+      "name": "Warehouse Security Setup",
+      "technician": "Senthil Kumar",
+      "customer": "VRL Logistics",
+      "location": "Madhavaram, Chennai",
+      "submissionDate": "May 23, 2024",
+      "status": "Rework",
+      "details": "16 IP Cameras, 2 NVRs",
+      "devicesCount": 18
+    }
+  ],
+  "serviceRequests": [
+    {
+      "id": "REQ-1452",
+      "customer": "Sridhar & Co",
+      "contact": "+91 90031 22334",
+      "type": "Camera not working properly",
+      "priority": "High",
+      "status": "In Progress",
+      "assignedTech": "Prakash Kumar",
+      "date": "May 25, 2024"
+    },
+    {
+      "id": "REQ-1453",
+      "customer": "Adyar Bakery",
+      "contact": "+91 90031 55667",
+      "type": "No video recording / DVR restart",
+      "priority": "Medium",
+      "status": "Open",
+      "assignedTech": "Unassigned",
+      "date": "May 25, 2024"
+    },
+    {
+      "id": "REQ-1454",
+      "customer": "Smart Gym",
+      "contact": "+91 90031 99001",
+      "type": "Camera Feed Blur",
+      "priority": "Low",
+      "status": "Resolved",
+      "assignedTech": "Senthil Kumar",
+      "date": "May 24, 2024"
+    }
+  ],
+  "products": [
+    {
+      "id": "PROD-001",
+      "name": "Hikvision 4MP IP Dome Camera",
+      "category": "IP Camera",
+      "price": 3200,
+      "stock": 45,
+      "model": "DS-2CD1143G0-I",
+      "description": "4MP Outdoor Dome Network Camera with IR range up to 30m, IP67 waterproof rating."
+    },
+    {
+      "id": "PROD-002",
+      "name": "Dahua 2MP Bullet Analog Camera",
+      "category": "Analog Camera",
+      "price": 1450,
+      "stock": 120,
+      "model": "DH-HAC-B1A21N",
+      "description": "2MP HDCVI Bullet Camera with 20m Smart IR, plastic body, suitable for indoor/outdoor use."
+    },
+    {
+      "id": "PROD-003",
+      "name": "CP Plus 8 Channel NVR",
+      "category": "NVR",
+      "price": 6500,
+      "stock": 18,
+      "model": "CP-UNR-4K2081-S2",
+      "description": "8 Channel Network Video Recorder supporting up to 8MP resolution, 1 SATA port (up to 6TB)."
+    },
+    {
+      "id": "PROD-004",
+      "name": "Seagate SkyHawk 2TB Surveillance HDD",
+      "category": "Hard Disk",
+      "price": 5200,
+      "stock": 30,
+      "model": "ST2000VX015",
+      "description": "Surveillance-optimized storage for 24/7 workloads, ImagePerfect firmware prevents frame drops."
+    },
+    {
+      "id": "PROD-005",
+      "name": "Finolex 3+1 CCTV Cable (90m)",
+      "category": "Cables",
+      "price": 2800,
+      "stock": 15,
+      "model": "FL-CCTV-90M",
+      "description": "Premium 3+1 CCTV copper cable for transmission of video signal and power supply."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "INV-001",
+      "productName": "Hikvision 4MP IP Dome Camera",
+      "sku": "HIK-IP-DOM-4MP",
+      "category": "IP Camera",
+      "totalStock": 45,
+      "reorderLevel": 10,
+      "status": "In Stock"
+    },
+    {
+      "id": "INV-002",
+      "productName": "Dahua 2MP Bullet Analog Camera",
+      "sku": "DAH-AN-BUL-2MP",
+      "category": "Analog Camera",
+      "totalStock": 120,
+      "reorderLevel": 20,
+      "status": "In Stock"
+    },
+    {
+      "id": "INV-003",
+      "productName": "CP Plus 8 Channel NVR",
+      "sku": "CP-NVR-8CH",
+      "category": "NVR",
+      "totalStock": 18,
+      "reorderLevel": 5,
+      "status": "In Stock"
+    },
+    {
+      "id": "INV-004",
+      "productName": "Seagate SkyHawk 2TB Surveillance HDD",
+      "sku": "SEA-HDD-2TB",
+      "category": "Hard Disk",
+      "totalStock": 8,
+      "reorderLevel": 10,
+      "status": "Low Stock"
+    },
+    {
+      "id": "INV-005",
+      "productName": "Finolex 3+1 CCTV Cable (90m)",
+      "sku": "FIN-CBL-90M",
+      "category": "Cables",
+      "totalStock": 3,
+      "reorderLevel": 5,
+      "status": "Low Stock"
+    }
+  ],
+  "payments": [
+    {
+      "id": "INV-1256",
+      "date": "May 10, 2024",
+      "customer": "Rohan Malhotra",
+      "amount": 8750,
+      "status": "Paid",
+      "method": "UPI (GPay)"
+    },
+    {
+      "id": "INV-1257",
+      "date": "May 15, 2024",
+      "customer": "Subiksha Retailers",
+      "amount": 5000,
+      "status": "Paid",
+      "method": "Net Banking"
+    },
+    {
+      "id": "INV-1258",
+      "date": "May 20, 2024",
+      "customer": "Dr. Vimal Clinic",
+      "amount": 4200,
+      "status": "Pending",
+      "method": "Cash on Delivery"
+    },
+    {
+      "id": "INV-1259",
+      "date": "May 22, 2024",
+      "customer": "Zenith IT Park",
+      "amount": 25000,
+      "status": "Paid",
+      "method": "Bank Transfer"
+    },
+    {
+      "id": "INV-1260",
+      "date": "May 24, 2024",
+      "customer": "Greenwood Apartment",
+      "amount": 12500,
+      "status": "Pending",
+      "method": "UPI (PhonePe)"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "NTF-01",
+      "title": "Payment received",
+      "message": "Payment received for Invoice #INV-1256 from Rohan Malhotra.",
+      "time": "May 25, 2024, 11:00 AM",
+      "category": "Payment",
+      "read": false
+    },
+    {
+      "id": "NTF-02",
+      "title": "Service request #REQ-1452 raised",
+      "message": "Camera not working properly reported by Sridhar & Co.",
+      "time": "May 25, 2024, 02:15 PM",
+      "category": "Request",
+      "read": false
+    },
+    {
+      "id": "NTF-03",
+      "title": "Technician visited for AMC",
+      "message": "Technician Prakash Kumar visited Subiksha Retailers for AMC Service.",
+      "time": "May 24, 2024, 11:00 AM",
+      "category": "System",
+      "read": true
+    },
+    {
+      "id": "NTF-04",
+      "title": "Low Stock Warning",
+      "message": "Seagate SkyHawk 2TB Surveillance HDD has dropped below reorder level.",
+      "time": "May 23, 2024, 09:30 AM",
+      "category": "Alert",
+      "read": false
+    }
+  ],
+  "settings": {
+    "companyName": "SK Technology",
+    "tagline": "CCTV Sales & Service Management",
+    "contactPerson": "Ramesh Kumar",
+    "phone": "+91 94440 99999",
+    "email": "admin@sktechnology.in",
+    "address": "No. 45, 1st Avenue, Anna Nagar East, Chennai - 600102",
+    "taxRate": 18,
+    "currency": "INR",
+    "allowNotifications": true,
+    "maintenanceMode": false
+  },
+  "chartData": [
+    { "month": "Jan", "orders": 45 },
+    { "month": "Feb", "orders": 52 },
+    { "month": "Mar", "orders": 68 },
+    { "month": "Apr", "orders": 85 },
+    { "month": "May", "orders": 128 },
+    { "month": "Jun", "orders": 95 },
+    { "month": "Jul", "orders": 110 },
+    { "month": "Aug", "orders": 130 },
+    { "month": "Sep", "orders": 115 },
+    { "month": "Oct", "orders": 125 },
+    { "month": "Nov", "orders": 140 },
+    { "month": "Dec", "orders": 160 }
+  ]
+}

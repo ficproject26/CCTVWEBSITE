@@ -1,0 +1,203 @@
+import { useState } from "react";
+import { Star, ChevronLeft, ChevronRight, MessageSquareQuote, ShieldCheck } from "lucide-react";
+
+const testimonials = [
+  {
+    name: "Ramesh Kumar",
+    role: "Home Owner",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    comment:
+      "Excellent service and installation. Highly recommended! The cameras quality is superb and the team was very professional.",
+    timeAgo: "2 Months Ago",
+  },
+  {
+    name: "Vikram Singh",
+    role: "Office Manager",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    comment:
+      "Very good quality products and on-time installation. The night vision is crystal clear.",
+    timeAgo: "1 Month Ago",
+  },
+  {
+    name: "Anita Sharma",
+    role: "Business Owner",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    comment:
+      "Great support team and quick response. They helped us choose the best solution for our office.",
+    timeAgo: "3 Weeks Ago",
+  },
+  {
+    name: "Karthik R",
+    role: "Shop Owner",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    comment:
+      "Best CCTV solution for our shop. Very satisfied with the product quality and after sales support.",
+    timeAgo: "1 Week Ago",
+  },
+  {
+    name: "Senthil Nathan",
+    role: "Factory Manager",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    comment:
+      "Installed 16 IP cameras for our warehouse. Outstanding clarity and smooth remote playback on mobile.",
+    timeAgo: "3 Days Ago",
+  },
+  {
+    name: "Priya Sundaram",
+    role: "Apartment Secretary",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    comment:
+      "SK Technology provided complete CCTV security for our entire residential complex. Exceptional work!",
+    timeAgo: "Yesterday",
+  },
+];
+
+export default function CustomerTestimonials() {
+  const [activePage, setActivePage] = useState(0);
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(testimonials.length / itemsPerPage);
+
+  const handlePrev = () => {
+    setActivePage((prev) => (prev === 0 ? totalPages - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setActivePage((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
+  };
+
+  const displayedTestimonials = testimonials.slice(
+    activePage * itemsPerPage,
+    activePage * itemsPerPage + itemsPerPage
+  );
+
+  return (
+    <section className="py-10 sm:py-12 bg-slate-50/70 relative border-b border-gray-200/60 overflow-hidden">
+      <div className="container max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+        
+        {/* Centered Header Section (Compact Proportional Sizes) */}
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          
+          {/* Header Tag Badge */}
+          <div className="inline-flex items-center justify-center gap-2 text-[#ff3b30] text-[11px] font-black uppercase tracking-wider">
+            <span className="w-6 h-[2px] bg-[#ff3b30]/40 rounded-full"></span>
+            <MessageSquareQuote className="h-3.5 w-3.5 text-[#ff3b30]" />
+            <span>WHAT OUR CUSTOMERS SAY</span>
+            <MessageSquareQuote className="h-3.5 w-3.5 text-[#ff3b30]" />
+            <span className="w-6 h-[2px] bg-[#ff3b30]/40 rounded-full"></span>
+          </div>
+
+          {/* Main Headline */}
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Trusted by 1000+ Happy Customers
+          </h2>
+
+          {/* Sub-description */}
+          <p className="text-slate-600 text-xs leading-relaxed font-medium">
+            Real experiences from real customers who trust our CCTV solutions for their safety and security.
+          </p>
+        </div>
+
+        {/* Testimonials Carousel Wrapper with Navigation Arrows */}
+        <div className="relative">
+          
+          {/* Navigation Arrow - Left */}
+          <button
+            onClick={handlePrev}
+            className="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-20 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
+            aria-label="Previous Testimonials"
+          >
+            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+          </button>
+
+          {/* Navigation Arrow - Right */}
+          <button
+            onClick={handleNext}
+            className="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-20 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
+            aria-label="Next Testimonials"
+          >
+            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          </button>
+
+          {/* 4 Testimonials Cards Grid (Compact Dimensions) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {displayedTestimonials.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white border border-gray-100/90 rounded-2xl p-4 sm:p-4.5 shadow-sm hover:shadow-md hover:border-red-100 transition-all duration-300 flex flex-col justify-between space-y-3.5 relative overflow-hidden group min-h-[220px]"
+              >
+                {/* Watermark Quotation Icon */}
+                <div className="absolute top-2.5 right-3 text-4xl text-red-100/50 font-serif select-none pointer-events-none group-hover:text-red-200/70 transition-colors">
+                  “
+                </div>
+
+                <div className="space-y-3 relative z-10">
+                  {/* User Profile Info Header */}
+                  <div className="flex items-center gap-2.5 pr-4">
+                    <img
+                      src={item.avatar}
+                      alt={item.name}
+                      className="w-10 h-10 max-w-[40px] max-h-[40px] rounded-full object-cover border-2 border-red-100 shadow-sm shrink-0 group-hover:scale-105 transition-transform"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-extrabold text-xs text-slate-900 leading-snug truncate">
+                        {item.name}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                        {item.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 5-Star Rating */}
+                  <div className="flex items-center gap-0.5 text-amber-400">
+                    {[...Array(item.rating)].map((_, i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-amber-400 stroke-amber-400" />
+                    ))}
+                  </div>
+
+                  {/* Comment Quote Text */}
+                  <p className="text-xs text-slate-600 font-normal leading-relaxed">
+                    {item.comment}
+                  </p>
+                </div>
+
+                {/* Time Badge at Bottom */}
+                <div className="pt-2.5 border-t border-gray-100/80 relative z-10">
+                  <div className="inline-flex items-center gap-1.5 text-[#ff3b30] text-[10px] font-bold bg-red-50/80 px-2 py-0.5 rounded-full border border-red-100/60">
+                    <ShieldCheck className="h-3 w-3 text-[#ff3b30]" />
+                    <span>{item.timeAgo}</span>
+                  </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Carousel Pagination Dots Indicator */}
+        <div className="flex items-center justify-center gap-1.5 pt-1">
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActivePage(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                activePage === i
+                  ? "w-6 bg-[#ff3b30]"
+                  : "w-2 bg-red-200 hover:bg-red-300"
+              }`}
+              aria-label={`Go to testimonial page ${i + 1}`}
+            />
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,717 @@
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { FiSearch, FiSliders, FiCheckCircle, FiInfo, FiTrash2, FiPlusCircle, FiEye, FiGrid, FiList, FiPlus, FiUser, FiCalendar, FiDollarSign, FiChevronDown, FiCheck, FiEdit } from 'react-icons/fi';
+import { approveOrder, addOrder, assignTechnicianToOrder, editOrder } from '../../redux/dashboardSlice';
+import Modal from '../../components/Modal';
+
+export default function Orders() {
+  const dispatch = useDispatch();
+  const orders = useSelector(state => state.dashboard.orders);
+  const technicians = useSelector(state => state.dashboard.technicians);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [activeStatusDropdown, setActiveStatusDropdown] = useState(null);
+  
+  // Layout and creation modal states
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [orderForm, setOrderForm] = useState({ 
+    customer: '', 
+    email: '', 
+    phone: '', 
+    type: 'Cameras Installation', 
+    assignedTechnician: 'Unassigned', 
+    amount: '',
+    location: 'Chennai Area'
+  });
+
+  // Filter logic
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.type.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'Completed':
+      case 'Approved':
+        return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40';
+      case 'In Progress':
+        return 'bg-blue-50 text-blue-700 dark:bg-blue-955/20 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40';
+      case 'Pending Approval':
+      case 'Pending':
+        return 'bg-amber-50 text-amber-700 dark:bg-amber-955/20 dark:text-amber-300 border border-amber-100 dark:border-amber-900/40';
+      default:
+        return 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-700';
+    }
+  };
+
+  const handleCreateOrder = (e) => {
+    e.preventDefault();
+    dispatch(addOrder({
+      customer: orderForm.customer,
+      email: orderForm.email,
+      phone: orderForm.phone,
+      type: orderForm.type,
+      assignedTechnician: orderForm.assignedTechnician,
+      amount: parseFloat(orderForm.amount) || 0,
+      location: orderForm.location
+    }));
+    setOrderForm({ 
+      customer: '', 
+      email: '', 
+      phone: '', 
+      type: 'Cameras Installation', 
+      assignedTechnician: 'Unassigned', 
+      amount: '',
+      location: 'Chennai Area'
+    });
+    setAddModalOpen(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      
+      {/* Search, Add Order & Filters Panel */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center transition-colors">
+        
+        {/* Search */}
+        <div className="relative w-full lg:max-w-xs">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <FiSearch size={15} />
+          </span>
+          <input
+            type="text"
+            placeholder="Search customer name, ID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full text-xs pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+          />
+        </div>
+
+        {/* Filters, View Switcher & Create Button Row */}
+        <div className="flex flex-wrap items-center justify-between lg:justify-end gap-3 w-full lg:w-auto">
+          {/* Status Buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar max-w-full">
+            <span className="text-xs text-slate-400 font-semibold flex items-center gap-1 flex-shrink-0">
+              Status:
+            </span>
+            {['All', 'Pending', 'Pending Approval', 'In Progress', 'Approved', 'Completed'].map(status => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-all flex-shrink-0 ${
+                  statusFilter === status 
+                    ? 'bg-primary text-white border-primary shadow-sm'
+                    : 'bg-white dark:bg-slate-800 text-slate-655 dark:text-slate-350 border-slate-100 dark:border-slate-750 hover:bg-slate-50'
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+
+          {/* Grid / List toggle & Add order btn */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center bg-slate-50 dark:bg-slate-800 p-1 rounded-xl border border-slate-200/40 dark:border-slate-700/50">
+              <button 
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 text-blue-650 shadow-xs' : 'text-slate-400 hover:text-slate-600'}`}
+                title="Card Grid View"
+              >
+                <FiGrid size={15} />
+              </button>
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-blue-650 shadow-xs' : 'text-slate-400 hover:text-slate-600'}`}
+                title="Table List View"
+              >
+                <FiList size={15} />
+              </button>
+            </div>
+
+            <button 
+              onClick={() => setAddModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+            >
+              <FiPlus /> Add Order
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Main Layout Rendering based on viewMode */}
+      {viewMode === 'list' ? (
+        /* List Mode - Tabular View */
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm transition-colors min-h-[320px]">
+          <div className="overflow-x-auto min-w-full pb-24">
+            {filteredOrders.length === 0 ? (
+              <div className="py-12 text-center text-slate-450 text-xs font-medium">
+                <FiInfo size={36} className="mx-auto mb-2 opacity-50" />
+                <p className="text-xs">No orders match your search parameters.</p>
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse min-w-[850px]">
+                <thead>
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+                    <th className="py-3.5 px-4 whitespace-nowrap w-28">Order ID</th>
+                    <th className="py-3.5 px-4 min-w-[220px]">Customer Details</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap w-44">Order Type</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap w-40">Assigned Staff</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap w-32">Amount</th>
+                    <th className="py-3.5 px-4 text-right whitespace-nowrap w-48">Status & Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-800 dark:text-slate-200 text-xs">
+                  {filteredOrders.map((ord) => {
+                    const isOpenDropdown = activeStatusDropdown === ord.id;
+                    return (
+                      <tr 
+                        key={ord.id} 
+                        onClick={() => setSelectedOrder(ord)}
+                        className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                      >
+                        <td className="py-4 px-4 align-middle font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap">{ord.id}</td>
+                        <td className="py-4 px-4 align-middle">
+                          <div className="font-bold text-slate-900 dark:text-slate-100 text-xs group-hover:text-primary transition-colors">{ord.customer}</div>
+                          <div className="text-[11px] text-slate-400 font-medium mt-0.5 font-sans whitespace-nowrap">{ord.phone} | {ord.email}</div>
+                        </td>
+                        <td className="py-4 px-4 align-middle font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">{ord.type}</td>
+                        <td className="py-4 px-4 align-middle font-semibold whitespace-nowrap">{ord.assignedTechnician}</td>
+                        <td className="py-4 px-4 align-middle font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">₹{(ord.amount || 0).toLocaleString('en-IN')}</td>
+                        <td className="py-4 px-4 align-middle text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                          <div className="relative inline-block text-right">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveStatusDropdown(isOpenDropdown ? null : ord.id);
+                              }}
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer ${getStatusBadge(ord.status)} hover:opacity-90`}
+                            >
+                              <span>{ord.status}</span>
+                              <FiChevronDown className="w-3.5 h-3.5 text-current opacity-70" />
+                            </button>
+
+                            {isOpenDropdown && (
+                              <div 
+                                className="absolute right-0 mt-1.5 w-44 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl z-30 py-1 font-semibold text-xs animate-in fade-in zoom-in-95 duration-100 text-left"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                                  Order Actions
+                                </div>
+                                {(ord.status === 'Pending' || ord.status === 'Pending Approval') && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      dispatch(approveOrder(ord.id));
+                                      setActiveStatusDropdown(null);
+                                    }}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-left text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-bold transition-colors cursor-pointer"
+                                  >
+                                    <FiCheck className="w-3.5 h-3.5" />
+                                    <span>Approve Order</span>
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingOrder(ord);
+                                    setOrderForm({
+                                      customer: ord.customer,
+                                      email: ord.email || '',
+                                      phone: ord.phone || '',
+                                      type: ord.type,
+                                      assignedTechnician: ord.assignedTechnician,
+                                      amount: ord.amount,
+                                      location: ord.location || 'Chennai Area',
+                                      status: ord.status
+                                    });
+                                    setEditModalOpen(true);
+                                    setActiveStatusDropdown(null);
+                                  }}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-left text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 font-bold transition-colors cursor-pointer"
+                                >
+                                  <FiEdit className="w-3.5 h-3.5" />
+                                  <span>Edit Order</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedOrder(ord);
+                                    setActiveStatusDropdown(null);
+                                  }}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-left text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold transition-colors border-t border-slate-100 dark:border-slate-800 cursor-pointer"
+                                >
+                                  <FiEye className="w-3.5 h-3.5 text-blue-500" />
+                                  <span>View Details</span>
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Grid Mode - Card Layout matching 4-column structure */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {filteredOrders.length === 0 ? (
+            <div className="col-span-full py-12 text-center text-slate-450 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+              No orders match the active filters.
+            </div>
+          ) : (
+            filteredOrders.map((ord) => (
+              <div key={ord.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 flex flex-col justify-between transition-all hover:shadow-md">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300">{ord.id}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge(ord.status)}`}>
+                      {ord.status}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 text-left">
+                    <h4 className="font-semibold text-slate-850 dark:text-slate-100 text-sm truncate">{ord.customer}</h4>
+                    <span className="text-xs text-slate-400 mt-0.5 block truncate">{ord.email} | {ord.phone}</span>
+                  </div>
+
+                  <div className="mt-4 space-y-2 border-t border-slate-55 dark:border-slate-800 pt-3 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 dark:text-slate-400">Order Type</span>
+                      <span className="font-semibold text-slate-850 dark:text-slate-200">{ord.type}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 dark:text-slate-400">Assigned Tech</span>
+                      <span className="font-semibold text-slate-850 dark:text-slate-200">{ord.assignedTechnician}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 dark:text-slate-400">Location</span>
+                      <span className="font-semibold text-slate-850 dark:text-slate-200 truncate max-w-[100px]">{ord.location || 'Chennai Area'}</span>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-slate-55 dark:border-slate-800/60 pt-2 mt-2">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold">Total Price</span>
+                      <span className="font-semibold text-primary dark:text-emerald-400 text-sm">₹{(ord.amount || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 border-t border-slate-55 dark:border-slate-800 pt-3 flex gap-2">
+                  <button 
+                    onClick={() => setSelectedOrder(ord)}
+                    className="flex-1 flex items-center justify-center gap-1 py-1 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-655 dark:text-slate-300 text-[11px] font-semibold rounded-xl transition-colors border border-slate-100 dark:border-slate-800"
+                  >
+                    <FiEye /> View
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setEditingOrder(ord);
+                      setOrderForm({
+                        customer: ord.customer,
+                        email: ord.email || '',
+                        phone: ord.phone || '',
+                        type: ord.type,
+                        assignedTechnician: ord.assignedTechnician,
+                        amount: ord.amount,
+                        location: ord.location || 'Chennai Area',
+                        status: ord.status
+                      });
+                      setEditModalOpen(true);
+                    }}
+                    className="flex-1 flex items-center justify-center gap-1 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-950/20 dark:text-blue-300 text-[11px] font-semibold rounded-xl transition-colors border border-blue-100 dark:border-blue-900/30"
+                  >
+                    Edit
+                  </button>
+                  {ord.status === 'Pending' && (
+                    <button 
+                      onClick={() => dispatch(approveOrder(ord.id))}
+                      className="flex-1 flex items-center justify-center gap-1 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-300 text-[11px] font-semibold rounded-xl transition-colors border border-emerald-100 dark:border-emerald-900/30"
+                    >
+                      Approve
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Register New Order Modal */}
+      <Modal isOpen={addModalOpen} onClose={() => setAddModalOpen(false)} title="Register New Order">
+        <form onSubmit={handleCreateOrder} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1.5">Customer Name</label>
+            <input 
+              required
+              type="text" 
+              placeholder="e.g. Ramesh Kumar" 
+              value={orderForm.customer}
+              onChange={(e) => setOrderForm({ ...orderForm, customer: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Phone Number</label>
+              <input 
+                required
+                type="text" 
+                placeholder="+91 XXXXX XXXXX" 
+                value={orderForm.phone}
+                onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Email Address</label>
+              <input 
+                required
+                type="email" 
+                placeholder="customer@domain.com" 
+                value={orderForm.email}
+                onChange={(e) => setOrderForm({ ...orderForm, email: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Order Type</label>
+              <select 
+                value={orderForm.type}
+                onChange={(e) => setOrderForm({ ...orderForm, type: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              >
+                <option>Cameras Installation</option>
+                <option>CCTV Installation</option>
+                <option>AMC Service</option>
+                <option>Cameras Repair</option>
+                <option>DVR Upgrade</option>
+                <option>System Audit</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Assigned Technician</label>
+              <select 
+                value={orderForm.assignedTechnician}
+                onChange={(e) => setOrderForm({ ...orderForm, assignedTechnician: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              >
+                <option value="Unassigned">Unassigned</option>
+                {technicians.map(t => (
+                  <option key={t.id} value={t.name}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Order Amount (₹)</label>
+              <input 
+                required
+                type="number" 
+                placeholder="Amount in Rupees" 
+                value={orderForm.amount}
+                onChange={(e) => setOrderForm({ ...orderForm, amount: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Location Area</label>
+              <input 
+                required
+                type="text" 
+                placeholder="e.g. Adyar, Chennai" 
+                value={orderForm.location}
+                onChange={(e) => setOrderForm({ ...orderForm, location: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+          <div className="pt-2 flex justify-end gap-2.5">
+            <button 
+              type="button" 
+              onClick={() => setAddModalOpen(false)}
+              className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors"
+            >
+              Create Order
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* View Order Detail Modal */}
+      <Modal isOpen={selectedOrder !== null} onClose={() => setSelectedOrder(null)} title="Order Detail View">
+        {selectedOrder && (
+          <div className="space-y-4 text-xs">
+            <div className="grid grid-cols-2 gap-4 border-b border-slate-105 dark:border-slate-800 pb-3">
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Order ID</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.id}</span>
+              </div>
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Date Created</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.date}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 border-b border-slate-105 dark:border-slate-800 pb-3">
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Customer Name</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.customer}</span>
+              </div>
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Location</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.location || 'Chennai Area'}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 border-b border-slate-105 dark:border-slate-800 pb-3">
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Contact Detail</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.phone}</span>
+              </div>
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Email Address</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.email}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 border-b border-slate-105 dark:border-slate-800 pb-3">
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Service/Installation Type</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.type}</span>
+              </div>
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Assigned Technician</span>
+                <span className="font-semibold text-slate-850 dark:text-slate-205">{selectedOrder.assignedTechnician}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Order Value</span>
+                <span className="font-semibold text-slate-855 dark:text-white text-sm">₹{selectedOrder.amount?.toLocaleString('en-IN')}</span>
+              </div>
+              <div>
+                <span className="block text-slate-400 font-semibold mb-0.5">Current Status</span>
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge(selectedOrder.status)}`}>
+                  {selectedOrder.status}
+                </span>
+              </div>
+            </div>
+
+            {/* List Technicians Who Accepted the Order */}
+            {selectedOrder.status === 'Approved' && selectedOrder.assignedTechnician === 'Unassigned' && (
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-4 mt-4 text-left">
+                <span className="block text-slate-400 font-bold mb-2">Technicians Who Accepted This Order</span>
+                {selectedOrder.acceptedBy && selectedOrder.acceptedBy.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedOrder.acceptedBy.map((techName) => {
+                      const techInfo = technicians.find(t => t.name === techName);
+                      return (
+                        <div key={techName} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-850/50 border border-slate-100 dark:border-slate-800/80 rounded-xl">
+                          <div>
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">{techName}</span>
+                            <span className="block text-[10px] text-slate-450 font-semibold">{techInfo?.specialization || 'Service Technician'}</span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              dispatch(assignTechnicianToOrder({ orderId: selectedOrder.id, technicianName: techName }));
+                              setSelectedOrder(prev => ({
+                                ...prev,
+                                assignedTechnician: techName,
+                                status: 'In Progress'
+                              }));
+                            }}
+                            className="px-3 py-1.5 bg-primary hover:bg-primary-dark text-white text-[10px] font-bold rounded-lg transition-colors"
+                          >
+                            Assign & Approve Project
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <span className="text-slate-400 italic">No technicians have accepted this order yet.</span>
+                )}
+              </div>
+            )}
+
+            <div className="pt-4 flex justify-end">
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-805 dark:text-slate-200 text-xs font-semibold rounded-xl transition-colors"
+              >
+                Close details
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Edit Order Modal */}
+      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Edit Order Details">
+        {editingOrder && (
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              dispatch(editOrder({
+                id: editingOrder.id,
+                customer: orderForm.customer,
+                email: orderForm.email,
+                phone: orderForm.phone,
+                type: orderForm.type,
+                assignedTechnician: orderForm.assignedTechnician,
+                amount: parseFloat(orderForm.amount) || 0,
+                location: orderForm.location,
+                status: orderForm.status
+              }));
+              setEditModalOpen(false);
+              setEditingOrder(null);
+            }} 
+            className="space-y-4 text-left"
+          >
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Customer Name</label>
+              <input 
+                required
+                type="text" 
+                value={orderForm.customer}
+                onChange={(e) => setOrderForm({ ...orderForm, customer: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Phone Number</label>
+                <input 
+                  required
+                  type="text" 
+                  value={orderForm.phone}
+                  onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Email Address</label>
+                <input 
+                  required
+                  type="email" 
+                  value={orderForm.email}
+                  onChange={(e) => setOrderForm({ ...orderForm, email: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Order Type</label>
+                <select 
+                  value={orderForm.type}
+                  onChange={(e) => setOrderForm({ ...orderForm, type: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                >
+                  <option>Cameras Installation</option>
+                  <option>CCTV Installation</option>
+                  <option>AMC Service</option>
+                  <option>Cameras Repair</option>
+                  <option>DVR Upgrade</option>
+                  <option>System Audit</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Assigned Technician</label>
+                <select 
+                  value={orderForm.assignedTechnician}
+                  onChange={(e) => setOrderForm({ ...orderForm, assignedTechnician: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                >
+                  <option value="Unassigned">Unassigned</option>
+                  {technicians.map(t => (
+                    <option key={t.id} value={t.name}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Order Amount (₹)</label>
+                <input 
+                  required
+                  type="number" 
+                  value={orderForm.amount}
+                  onChange={(e) => setOrderForm({ ...orderForm, amount: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Location Area</label>
+                <input 
+                  required
+                  type="text" 
+                  value={orderForm.location}
+                  onChange={(e) => setOrderForm({ ...orderForm, location: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Order Status</label>
+              <select
+                value={orderForm.status}
+                onChange={(e) => setOrderForm({ ...orderForm, status: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              >
+                <option value="Pending">Pending</option>
+                <option value="Pending Approval">Pending Approval</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Approved">Approved</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div className="pt-2 flex justify-end gap-2.5">
+              <button 
+                type="button" 
+                onClick={() => {
+                  setEditModalOpen(false);
+                  setEditingOrder(null);
+                }}
+                className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-semibold rounded-xl"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+    </div>
+  );
+}

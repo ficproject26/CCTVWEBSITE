@@ -1,0 +1,22 @@
+# Tasks
+
+- `[x]` Setup Tailwind configuration and CSS entrypoint
+- `[x]` Create mock data JSON (`db.json`)
+- `[x]` Setup Redux store and dashboard slice
+- `[x]` Create layout, Sidebar, and Header components (with collapsible sidebar & theme toggle)
+- `[x]` Create common UI components (Modal, Toast, Badges)
+- `[x]` Implement Pages
+  - `[x]` Dashboard Page (incorporating KPI Cards, Chart, tables, activity timeline, quick actions)
+  - `[x]` Orders Page
+  - `[x]` Customers Page
+  - `[x]` Technicians Page
+  - `[x]` Projects Page
+  - `[x]` Service Requests Page
+  - `[x]` Products Page
+  - `[x]` Inventory Page
+  - `[x]` Payments Page
+  - `[x]` Reports Page
+  - `[x]` Notifications Page
+  - `[x]` Settings Page
+- `[x]` Set up App routing (`App.jsx` and `main.jsx`)
+- `[x]` Verify application compilation and check functionality

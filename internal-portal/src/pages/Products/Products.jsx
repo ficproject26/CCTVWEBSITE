@@ -1,0 +1,1046 @@
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { addProduct, deleteProduct, editProduct, setProducts } from '../../redux/dashboardSlice';
+import { FiPlus, FiTrash2, FiSearch, FiLayers, FiDollarSign, FiInfo } from 'react-icons/fi';
+import Modal from '../../components/Modal';
+
+function getFallbackSrc(category) {
+  switch (category) {
+    case 'IP Camera':
+      return '/hikvision_dome_camera.png';
+    case 'Analog Camera':
+      return '/dahua_bullet_camera.png';
+    case 'NVR':
+    case 'DVR':
+      return '/cp_plus_nvr.png';
+    case 'Hard Disk':
+      return '/surveillance_hdd.png';
+    case 'Cables':
+    default:
+      return '/cctv_cable.png';
+  }
+}
+
+function ProductCard({ prod, onDelete, onEdit }) {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const images = prod.imageUrls && prod.imageUrls.length > 0 
+    ? prod.imageUrls 
+    : [prod.imageUrl || getFallbackSrc(prod.category)];
+
+  const currentImage = images[activeImageIndex] || images[0];
+
+  const hasOfferPrice = prod.offerPrice && Number(prod.offerPrice) > 0;
+  const computedDiscount = hasOfferPrice && Number(prod.price) > 0
+    ? Math.round(((Number(prod.price) - Number(prod.offerPrice)) / Number(prod.price)) * 100)
+    : Number(prod.discount || 0);
+
+  const displayPrice = hasOfferPrice ? prod.offerPrice : prod.price;
+  const originalPrice = hasOfferPrice 
+    ? prod.price 
+    : (Number(prod.discount) > 0 ? Math.round(prod.price * (1 + Number(prod.discount) / 100)) : null);
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 flex flex-col justify-between hover:border-primary/20 dark:hover:border-primary/20 transition-all text-left relative overflow-hidden">
+      <div>
+        {/* Float badges for New, Best Seller and Discount */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-1">
+          {prod.isNew && (
+            <span className="px-2 py-0.5 rounded bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
+              New
+            </span>
+          )}
+          {prod.isBestSeller && (
+            <span className="px-2 py-0.5 rounded bg-amber-500 text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
+              Best Seller
+            </span>
+          )}
+          {prod.isFlashDeal && (
+            <span className="px-2 py-0.5 rounded bg-rose-600 text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
+              ⚡ Flash Deal
+            </span>
+          )}
+          {computedDiscount > 0 ? (
+            <span className="px-2 py-0.5 rounded bg-rose-500 text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
+              {computedDiscount}% OFF
+            </span>
+          ) : null}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-855 text-slate-550 dark:text-slate-350 text-[10px] font-bold uppercase tracking-wider">{prod.category}</span>
+          <button 
+            onClick={() => onDelete(prod.id)}
+            className="p-1 rounded text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+            title="Remove product"
+          >
+            <FiTrash2 size={13} />
+          </button>
+        </div>
+
+        {/* Product Image Frame */}
+        <div className="mt-3.5 relative group">
+          <div className="w-full h-36 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center relative overflow-hidden border border-slate-100 dark:border-slate-800">
+            <img 
+              src={currentImage} 
+              alt={prod.name} 
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+
+          {/* Multiple Image Thumbnails Indicator on Card */}
+          {images.length > 1 && (
+            <div className="flex justify-center gap-1.5 mt-2 overflow-x-auto pb-1 max-w-full">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`w-7 h-7 rounded border transition-all overflow-hidden flex-shrink-0 ${
+                    activeImageIndex === idx ? 'border-primary scale-105 ring-1 ring-primary' : 'border-slate-150 dark:border-slate-750 opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="thumb" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-3">
+          <h4 className="font-semibold text-slate-800 dark:text-slate-100 text-xs leading-normal line-clamp-2">{prod.name}</h4>
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold block mt-0.5">Model: {prod.model}</span>
+        </div>
+
+        <p className="text-[11px] text-slate-650 dark:text-slate-350 mt-2.5 leading-normal line-clamp-3">{prod.description}</p>
+        
+        {/* Additional details */}
+        <div className="mt-3.5 space-y-2 border-t border-slate-50 dark:border-slate-855/50 pt-2.5 text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+          <div className="flex items-center gap-1.5">
+            <span className="text-amber-500 text-xs">★</span>
+            <span>Rating: {prod.rating || '4.5'} / 5</span>
+          </div>
+          {prod.warranty && (
+            <div className="flex items-center gap-1.5">
+              <span>🛡️</span>
+              <span>Warranty: {prod.warranty}</span>
+            </div>
+          )}
+          {prod.delivery && (
+            <div className="flex items-center gap-1.5">
+              <span>🚚</span>
+              <span>Delivery: {prod.delivery}</span>
+            </div>
+          )}
+          {prod.offers && (
+            <div className="flex items-center gap-1.5">
+              <span>🏷️</span>
+              <span className="text-rose-600 dark:text-rose-455 truncate">Offer: {prod.offers}</span>
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      <div className="mt-4 border-t border-slate-50 dark:border-slate-855 pt-3.5 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-[10px] text-slate-400 block font-bold uppercase">Price</span>
+            <div className="flex items-baseline gap-1">
+              <span className="font-bold text-slate-900 dark:text-white text-xs">₹{(displayPrice || 0).toLocaleString('en-IN')}</span>
+              {originalPrice ? (
+                <span className="text-[9px] line-through text-slate-400 font-semibold">
+                  ₹{originalPrice.toLocaleString('en-IN')}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase">Stock In Hand</span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${prod.stock > 10 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20' : 'text-amber-600 bg-amber-50 dark:bg-amber-955/20'}`}>
+              {prod.stock} units
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={() => onEdit(prod)}
+          className="w-full py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-xs font-semibold rounded-xl transition-colors border border-blue-100 dark:border-blue-900/30"
+        >
+          Edit Product
+        </button>
+      </div>
+
+    </div>
+  );
+}
+
+export default function Products() {
+  const dispatch = useDispatch();
+  const products = useSelector(state => state.dashboard.products);
+
+  React.useEffect(() => {
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.data)) {
+          const mapped = data.data.map(item => ({
+            id: item._id,
+            name: item.title,
+            category: item.category === 'ip' ? 'IP Camera' : 
+                      item.category === 'bullet' ? 'Analog Camera' :
+                      item.category === 'nvr' ? 'NVR' :
+                      item.category === 'dvr' ? 'DVR' :
+                      item.category === 'harddisk' ? 'Hard Disk' :
+                      item.category === 'accessories' ? 'Cables' : item.category,
+            model: item.specs?.[0] || 'Generic Model',
+            price: item.price,
+            offerPrice: item.originalPrice ? item.price : '', 
+            stock: item.stock || 0,
+            description: item.description || '',
+            imageUrl: item.image,
+            imageUrls: [item.image],
+            discount: item.badge || '',
+            delivery: 'Free Delivery',
+            warranty: '2 Years Warranty',
+            rating: item.rating || 4.5,
+            offers: item.badge || ''
+          }));
+          dispatch(setProducts(mapped));
+        }
+      })
+      .catch(err => console.error('Failed to fetch products:', err));
+  }, [dispatch]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+
+  const defaultCategories = ['IP Camera', 'Analog Camera', 'NVR', 'DVR', 'Hard Disk', 'Cables', 'Power Supply', 'Accessories', 'Tools'];
+
+  const [productForm, setProductForm] = useState({ 
+    name: '', 
+    category: 'IP Camera', 
+    customCategory: '',
+    price: '', 
+    offerPrice: '',
+    stock: '', 
+    description: '', 
+    model: '',
+    imageUrl: '',
+    imageUrls: [],
+    discount: '',
+    delivery: '',
+    warranty: '',
+    rating: '',
+    offers: '',
+    isNew: false,
+    isBestSeller: false,
+    isFlashDeal: false
+  });
+
+  const handleMultipleFilesChange = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductForm(prev => {
+          const newUrls = [...(prev.imageUrls || []), reader.result];
+          return {
+            ...prev,
+            imageUrls: newUrls,
+            imageUrl: prev.imageUrl || reader.result
+          };
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveImage = (imgUrl) => {
+    setProductForm(prev => {
+      const newUrls = (prev.imageUrls || []).filter(url => url !== imgUrl);
+      return {
+        ...prev,
+        imageUrls: newUrls,
+        imageUrl: prev.imageUrl === imgUrl ? (newUrls[0] || '') : prev.imageUrl
+      };
+    });
+  };
+
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    const finalCategory = productForm.category === 'Other' ? (productForm.customCategory || 'Other') : productForm.category;
+
+    // Map admin category to backend enum
+    let dbCategory = 'cctv';
+    const c = finalCategory.toLowerCase();
+    if (c.includes('ip camera')) dbCategory = 'ip';
+    else if (c.includes('analog camera')) dbCategory = 'bullet';
+    else if (c.includes('nvr')) dbCategory = 'nvr';
+    else if (c.includes('dvr')) dbCategory = 'dvr';
+    else if (c.includes('hard disk')) dbCategory = 'harddisk';
+    else if (c.includes('cables') || c.includes('cable') || c.includes('accessory') || c.includes('accessories') || c.includes('power supply')) dbCategory = 'accessories';
+
+    const dbProduct = {
+      title: productForm.name,
+      category: dbCategory,
+      brand: 'SK-Vision',
+      price: parseFloat(productForm.offerPrice) > 0 ? parseFloat(productForm.offerPrice) : parseFloat(productForm.price),
+      originalPrice: parseFloat(productForm.offerPrice) > 0 ? parseFloat(productForm.price) : undefined,
+      badge: productForm.offers || (productForm.discount ? `${productForm.discount}% OFF` : undefined),
+      rating: parseFloat(productForm.rating) || 4.5,
+      image: productForm.imageUrl || getFallbackSrc(finalCategory),
+      specs: productForm.model ? [productForm.model] : ['SK-Vision Surveillance System'],
+      stock: parseInt(productForm.stock) || 0,
+      description: productForm.description || '',
+      isFlashDeal: productForm.isFlashDeal || false,
+      isBestSeller: productForm.isBestSeller || false,
+    };
+
+    fetch('http://localhost:5000/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dbProduct)
+    })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(errData => {
+            throw new Error(errData.message || 'Server error');
+          });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success && data.data) {
+          const item = data.data;
+          dispatch(addProduct({
+            id: item._id,
+            name: item.title,
+            category: finalCategory,
+            model: item.specs?.[0] || 'Generic Model',
+            price: parseFloat(productForm.price) || 0,
+            offerPrice: parseFloat(productForm.offerPrice) || '',
+            stock: item.stock || 0,
+            description: item.description || '',
+            imageUrl: item.image,
+            imageUrls: [item.image],
+            discount: productForm.discount || '',
+             delivery: 'Free Delivery',
+            warranty: '2 Years Warranty',
+            rating: item.rating || 4.5,
+            offers: item.badge || '',
+            isNew: productForm.isNew || false,
+            isBestSeller: productForm.isBestSeller || false,
+            isFlashDeal: productForm.isFlashDeal || false
+          }));
+        }
+      })
+      .catch(err => {
+        console.error('Failed to add product to database:', err);
+        alert('Failed to save product in database: ' + err.message);
+      });
+
+    setProductForm({ 
+      name: '', 
+      category: 'IP Camera', 
+      customCategory: '',
+      price: '', 
+      offerPrice: '',
+      stock: '', 
+      description: '', 
+      model: '',
+      imageUrl: '',
+      imageUrls: [],
+      discount: '',
+      delivery: '',
+      warranty: '',
+      rating: '',
+      offers: '',
+      isNew: false,
+      isBestSeller: false,
+      isFlashDeal: false
+    });
+    setModalOpen(false);
+  };
+
+  const filteredProducts = products.filter(prod => {
+    const matchesSearch = prod.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          prod.model.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'All' || prod.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <div className="space-y-6">
+      
+      {/* Header Controls */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center transition-colors">
+        
+        {/* Search */}
+        <div className="relative w-full md:max-w-xs">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <FiSearch size={15} />
+          </span>
+          <input
+            type="text"
+            placeholder="Search products by model, name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full text-xs pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+          />
+        </div>
+
+        {/* Action & Filter */}
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-800 text-slate-700 dark:text-slate-350 rounded-lg px-2.5 py-1.5 focus:outline-none"
+          >
+            <option value="All">All Categories</option>
+            <option value="IP Camera">IP Cameras</option>
+            <option value="Analog Camera">Analog Cameras</option>
+            <option value="NVR">NVRs</option>
+            <option value="DVR">DVRs</option>
+            <option value="Hard Disk">Surveillance HDD</option>
+            <option value="Cables">Cables</option>
+          </select>
+
+          <button 
+            onClick={() => setModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+          >
+            <FiPlus /> Add Product
+          </button>
+          </div>
+
+      </div>
+
+      {/* Grid of Products */}
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
+        {filteredProducts.length === 0 ? (
+          <div className="col-span-full py-12 text-center text-slate-400">
+            <FiInfo className="mx-auto mb-2 opacity-50" size={32} />
+            <p className="text-xs">No products found matching that filter.</p>
+          </div>
+        ) : (
+          filteredProducts.map((prod) => (
+            <ProductCard 
+              key={prod.id} 
+              prod={prod} 
+              onDelete={(id) => {
+                fetch(`http://localhost:5000/api/products/${id}`, {
+                  method: 'DELETE',
+                })
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.success) {
+                      dispatch(deleteProduct(id));
+                    }
+                  })
+                  .catch(err => {
+                    console.error('Failed to delete product from API:', err);
+                    dispatch(deleteProduct(id));
+                  });
+              }}
+              onEdit={(p) => {
+                setEditingProduct(p);
+                const isDefault = defaultCategories.includes(p.category);
+                setProductForm({
+                  name: p.name,
+                  category: isDefault ? p.category : 'Other',
+                  customCategory: isDefault ? '' : p.category,
+                  price: p.price,
+                  offerPrice: p.offerPrice || '',
+                  stock: p.stock,
+                  description: p.description || '',
+                  model: p.model || '',
+                  imageUrl: p.imageUrl || '',
+                  imageUrls: p.imageUrls || [],
+                  discount: p.discount || '',
+                  delivery: p.delivery || '',
+                  warranty: p.warranty || '',
+                  rating: p.rating || '',
+                  offers: p.offers || '',
+                  isNew: p.isNew || false,
+                  isBestSeller: p.isBestSeller || false,
+                  isFlashDeal: p.isFlashDeal || false
+                });
+                setEditModalOpen(true);
+              }}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Modal Add Product */}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Register New CCTV Device">
+        <form onSubmit={handleAddProduct} className="space-y-4 text-left">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Product Name</label>
+              <input 
+                required
+                type="text" 
+                placeholder="e.g. CP Plus Dome Camera" 
+                value={productForm.name}
+                onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Model Number</label>
+              <input 
+                required
+                type="text" 
+                placeholder="e.g. CP-UNC-DA21L2" 
+                value={productForm.model}
+                onChange={(e) => setProductForm({ ...productForm, model: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Category</label>
+              <select 
+                value={productForm.category}
+                onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-850 rounded-xl focus:outline-none focus:border-primary text-slate-850 dark:text-slate-100"
+              >
+                {defaultCategories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+                <option value="Other" style={{ color: '#2563eb', fontWeight: 'bold' }}>Add Category</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Initial Stock</label>
+              <input 
+                required
+                type="number" 
+                placeholder="10" 
+                value={productForm.stock}
+                onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Price / M.R.P. (₹)</label>
+              <input 
+                required
+                type="number" 
+                placeholder="2500" 
+                value={productForm.price}
+                onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Offer Price (₹) (Optional)</label>
+              <input 
+                type="number" 
+                placeholder="Discounted selling price" 
+                value={productForm.offerPrice}
+                onChange={(e) => setProductForm({ ...productForm, offerPrice: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          {productForm.category === 'Other' && (
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Custom Category Name</label>
+              <input 
+                required
+                type="text" 
+                placeholder="Type custom category name" 
+                value={productForm.customCategory}
+                onChange={(e) => setProductForm({ ...productForm, customCategory: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Discount (%)</label>
+              <input 
+                type="number" 
+                placeholder="e.g. 10" 
+                value={productForm.discount}
+                onChange={(e) => setProductForm({ ...productForm, discount: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Rating (1.0 - 5.0)</label>
+              <input 
+                type="number" 
+                step="0.1" 
+                min="1" 
+                max="5"
+                placeholder="e.g. 4.8" 
+                value={productForm.rating}
+                onChange={(e) => setProductForm({ ...productForm, rating: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Warranty</label>
+              <input 
+                type="text" 
+                placeholder="e.g. 1 Year Warranty" 
+                value={productForm.warranty}
+                onChange={(e) => setProductForm({ ...productForm, warranty: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Delivery Info</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Free delivery in 2 days" 
+                value={productForm.delivery}
+                onChange={(e) => setProductForm({ ...productForm, delivery: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Promotional Offers</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Flat ₹500 off with HDFC Card" 
+                value={productForm.offers}
+                onChange={(e) => setProductForm({ ...productForm, offers: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-6 py-1">
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-350 cursor-pointer">
+              <input 
+                type="checkbox"
+                checked={productForm.isNew}
+                onChange={(e) => setProductForm({ ...productForm, isNew: e.target.checked })}
+                className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+              />
+              Mark as New Product
+            </label>
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-350 cursor-pointer">
+              <input 
+                type="checkbox"
+                checked={productForm.isBestSeller}
+                onChange={(e) => setProductForm({ ...productForm, isBestSeller: e.target.checked })}
+                className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+              />
+              Mark as Best Seller
+            </label>
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-350 cursor-pointer">
+              <input 
+                type="checkbox"
+                checked={productForm.isFlashDeal}
+                onChange={(e) => setProductForm({ ...productForm, isFlashDeal: e.target.checked })}
+                className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+              />
+              Mark as Flash Deal
+            </label>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1.5">Product Description</label>
+            <textarea 
+              rows={2}
+              placeholder="Provide specifications, camera features..." 
+              value={productForm.description}
+              onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-2">Upload Device Photo(s) (Supports multiple)</label>
+            <div className="border border-dashed border-slate-200 dark:border-slate-800 p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/10 transition-colors">
+              <div className="flex items-center gap-4">
+                <label className="cursor-pointer bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors">
+                  Choose Photos
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    multiple
+                    className="hidden" 
+                    onChange={handleMultipleFilesChange} 
+                  />
+                </label>
+                <span className="text-xs text-slate-400">Supports PNG, JPG, or GIF formats</span>
+              </div>
+              
+              {productForm.imageUrls && productForm.imageUrls.length > 0 && (
+                <div className="flex flex-wrap gap-2.5 mt-4">
+                  {productForm.imageUrls.map((url, index) => (
+                    <div key={index} className="w-16 h-16 rounded-xl border border-slate-200 dark:border-slate-700 relative overflow-hidden bg-white dark:bg-slate-800 flex-shrink-0 group">
+                      <img src={url} alt="upload preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(url)}
+                        className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Remove Image"
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2.5">
+            <button 
+              type="button" 
+              onClick={() => setModalOpen(false)}
+              className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors"
+            >
+              Add Product
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Product Modal */}
+      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Edit Product Details">
+        {editingProduct && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              // Map admin category to backend enum
+              let dbCategory = 'cctv';
+              const c = productForm.category.toLowerCase();
+              if (c.includes('ip camera')) dbCategory = 'ip';
+              else if (c.includes('analog camera')) dbCategory = 'bullet';
+              else if (c.includes('nvr')) dbCategory = 'nvr';
+              else if (c.includes('dvr')) dbCategory = 'dvr';
+              else if (c.includes('hard disk')) dbCategory = 'harddisk';
+              else if (c.includes('cables') || c.includes('cable') || c.includes('accessory') || c.includes('accessories') || c.includes('power supply')) dbCategory = 'accessories';
+
+              const dbProduct = {
+                title: productForm.name,
+                category: dbCategory,
+                brand: 'SK-Vision',
+                price: parseFloat(productForm.offerPrice) > 0 ? parseFloat(productForm.offerPrice) : parseFloat(productForm.price),
+                originalPrice: parseFloat(productForm.offerPrice) > 0 ? parseFloat(productForm.price) : undefined,
+                badge: productForm.offers || (productForm.discount ? `${productForm.discount}% OFF` : undefined),
+                rating: parseFloat(productForm.rating) || 4.5,
+                image: productForm.imageUrl || getFallbackSrc(productForm.category),
+                specs: productForm.model ? [productForm.model] : ['SK-Vision Surveillance System'],
+                stock: parseInt(productForm.stock) || 0,
+                description: productForm.description || '',
+                isFlashDeal: productForm.isFlashDeal || false,
+                isBestSeller: productForm.isBestSeller || false,
+              };
+
+              fetch(`http://localhost:5000/api/products/${editingProduct.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dbProduct)
+              })
+                .then(res => {
+                  if (!res.ok) {
+                    return res.json().then(errData => {
+                      throw new Error(errData.message || 'Server error');
+                    });
+                  }
+                  return res.json();
+                })
+                .then(data => {
+                  if (data.success) {
+                    dispatch(editProduct({
+                      id: editingProduct.id,
+                      name: productForm.name,
+                      category: productForm.category,
+                      price: parseFloat(productForm.price) || 0,
+                      offerPrice: parseFloat(productForm.offerPrice) || '',
+                      stock: parseInt(productForm.stock) || 0,
+                      description: productForm.description,
+                      model: productForm.model,
+                      imageUrl: productForm.imageUrl,
+                      imageUrls: productForm.imageUrls || [],
+                      discount: parseFloat(productForm.discount) || 0,
+                      delivery: productForm.delivery,
+                      warranty: productForm.warranty,
+                      rating: parseFloat(productForm.rating) || 4.5,
+                      offers: productForm.offers,
+                       isNew: productForm.isNew || false,
+                      isBestSeller: productForm.isBestSeller || false,
+                      isFlashDeal: productForm.isFlashDeal || false
+                    }));
+                  }
+                })
+                .catch(err => {
+                  console.error('Failed to edit product in database:', err);
+                  alert('Failed to update product in database: ' + err.message);
+                });
+
+              setEditModalOpen(false);
+              setEditingProduct(null);
+            }}
+            className="space-y-4 text-left"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Product Name</label>
+                <input
+                  required
+                  type="text"
+                  value={productForm.name}
+                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Model Number</label>
+                <input
+                  type="text"
+                  value={productForm.model}
+                  onChange={(e) => setProductForm({ ...productForm, model: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Category</label>
+                <select
+                  value={productForm.category}
+                  onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-805 rounded-xl focus:outline-none focus:border-primary text-slate-850 dark:text-slate-100"
+                >
+                  {defaultCategories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                  <option value="Other" style={{ color: '#2563eb', fontWeight: 'bold' }}>Add Category</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Stock Quantity</label>
+                <input
+                  required
+                  type="number"
+                  value={productForm.stock}
+                  onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Price / M.R.P. (₹)</label>
+                <input
+                  required
+                  type="number"
+                  value={productForm.price}
+                  onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Offer Price (₹) (Optional)</label>
+                <input
+                  type="number"
+                  placeholder="Discounted selling price"
+                  value={productForm.offerPrice}
+                  onChange={(e) => setProductForm({ ...productForm, offerPrice: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+          {productForm.category === 'Other' && (
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Custom Category Name</label>
+              <input 
+                required
+                type="text" 
+                placeholder="Type custom category name" 
+                value={productForm.customCategory}
+                onChange={(e) => setProductForm({ ...productForm, customCategory: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          )}
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Discount (%)</label>
+                <input 
+                  type="number" 
+                  placeholder="e.g. 10" 
+                  value={productForm.discount}
+                  onChange={(e) => setProductForm({ ...productForm, discount: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Rating (1.0 - 5.0)</label>
+                <input 
+                  type="number" 
+                  step="0.1" 
+                  min="1" 
+                  max="5"
+                  placeholder="e.g. 4.8" 
+                  value={productForm.rating}
+                  onChange={(e) => setProductForm({ ...productForm, rating: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Warranty</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. 1 Year Warranty" 
+                  value={productForm.warranty}
+                  onChange={(e) => setProductForm({ ...productForm, warranty: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Delivery Info</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Free delivery in 2 days" 
+                  value={productForm.delivery}
+                  onChange={(e) => setProductForm({ ...productForm, delivery: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Promotional Offers</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Flat ₹500 off with HDFC Card" 
+                  value={productForm.offers}
+                  onChange={(e) => setProductForm({ ...productForm, offers: e.target.value })}
+                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800/50 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-6 py-1">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-350 cursor-pointer">
+                <input 
+                  type="checkbox"
+                  checked={productForm.isNew}
+                  onChange={(e) => setProductForm({ ...productForm, isNew: e.target.checked })}
+                  className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+                />
+                Mark as New Product
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-350 cursor-pointer">
+                <input 
+                  type="checkbox"
+                  checked={productForm.isBestSeller}
+                  onChange={(e) => setProductForm({ ...productForm, isBestSeller: e.target.checked })}
+                  className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+                />
+                Mark as Best Seller
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-350 cursor-pointer">
+                <input 
+                  type="checkbox"
+                  checked={productForm.isFlashDeal}
+                  onChange={(e) => setProductForm({ ...productForm, isFlashDeal: e.target.checked })}
+                  className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+                />
+                Mark as Flash Deal
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Description</label>
+              <textarea
+                rows={3}
+                value={productForm.description}
+                onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-xl focus:outline-none focus:border-primary text-slate-800 dark:text-slate-100"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-2">Upload Device Photo(s) (Supports multiple)</label>
+              <div className="border border-dashed border-slate-200 dark:border-slate-800 p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/10 transition-colors">
+                <div className="flex items-center gap-4">
+                  <label className="cursor-pointer bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors">
+                    Choose Photos
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple
+                      className="hidden" 
+                      onChange={handleMultipleFilesChange} 
+                    />
+                  </label>
+                  <span className="text-xs text-slate-400">Supports PNG, JPG, or GIF formats</span>
+                </div>
+                
+                {productForm.imageUrls && productForm.imageUrls.length > 0 && (
+                  <div className="flex flex-wrap gap-2.5 mt-4">
+                    {productForm.imageUrls.map((url, index) => (
+                      <div key={index} className="w-16 h-16 rounded-xl border border-slate-200 dark:border-slate-700 relative overflow-hidden bg-white dark:bg-slate-800 flex-shrink-0 group">
+                        <img src={url} alt="upload preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(url)}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Remove Image"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => { setEditModalOpen(false); setEditingProduct(null); }}
+                className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-semibold rounded-xl"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+    </div>
+  );
+}

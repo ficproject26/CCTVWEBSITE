@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    @apply bg-[#f5f7fa] text-slate-700 text-base antialiased transition-colors duration-200;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  body.dark {
+    @apply bg-slate-950 text-slate-200;
+  }
+
+  /* Reset heading font to Inter — no serif override */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    color: inherit;
+  }
+}
+
+/* ─── Global Typography Scale ───────────────────────────────── */
+/* Use these classes consistently across ALL pages               */
+@layer components {
+
+  /* Page title — e.g. "Dashboard", "Customers" in the Header */
+  .ty-page-title {
+    @apply text-xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight;
+  }
+
+  /* Section heading — card titles, panel headings */
+  .ty-section-heading {
+    @apply text-base font-semibold text-slate-800 dark:text-slate-100 tracking-tight;
+  }
+
+  /* Card title — primary label inside a card */
+  .ty-card-title {
+    @apply text-base font-semibold text-slate-800 dark:text-slate-100 leading-snug;
+  }
+
+  /* Sub-label inside a card — secondary descriptor */
+  .ty-card-subtitle {
+    @apply text-sm font-medium text-slate-500 dark:text-slate-400;
+  }
+
+  /* Table header cell */
+  .ty-table-header {
+    @apply text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide;
+  }
+
+  /* Table body cell — primary data value */
+  .ty-table-cell {
+    @apply text-sm font-medium text-slate-700 dark:text-slate-300;
+  }
+
+  /* Table cell — bold/emphasis variant */
+  .ty-table-cell-strong {
+    @apply text-sm font-semibold text-slate-800 dark:text-slate-100;
+  }
+
+  /* KPI metric value — large numbers on stat cards */
+  .ty-metric-value {
+    @apply text-2xl font-semibold text-slate-800 dark:text-slate-100;
+  }
+
+  /* KPI metric label */
+  .ty-metric-label {
+    @apply text-sm font-medium text-slate-500 dark:text-slate-400;
+  }
+
+  /* Body / paragraph text */
+  .ty-body {
+    @apply text-sm font-normal text-slate-600 dark:text-slate-300 leading-relaxed;
+  }
+
+  /* Muted helper / meta text */
+  .ty-muted {
+    @apply text-sm font-medium text-slate-400 dark:text-slate-500;
+  }
+
+  /* Badge / pill label */
+  .ty-badge {
+    @apply text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  /* Button text */
+  .ty-btn {
+    @apply text-sm font-semibold;
+  }
+
+  /* Input / form label */
+  .ty-label {
+    @apply text-sm font-semibold text-slate-500 dark:text-slate-400;
+  }
+
+  /* Small tag / chip text */
+  .ty-tag {
+    @apply text-xs font-semibold uppercase tracking-wide;
+  }
+}
+
+/* ─── Custom Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 dark:bg-slate-700 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
