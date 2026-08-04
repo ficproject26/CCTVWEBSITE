@@ -37,7 +37,7 @@ export default function MobileAppSection() {
             </div>
 
             {/* Main Headline */}
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight uppercase">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight uppercase">
               Your Security,<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff3b30] via-rose-500 to-red-400">
                 one tap away
@@ -45,47 +45,47 @@ export default function MobileAppSection() {
             </h2>
 
             {/* Sub-description */}
-            <p className="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed font-normal">
+            <p className="text-slate-300 text-[11px] sm:text-sm max-w-xl leading-relaxed font-normal">
               Monitor your cameras in real time, receive instant alerts, and access live footage from anywhere. Available for iOS and Android.
             </p>
 
-            {/* App Store Buttons with Arrows */}
-            <div className="flex flex-wrap items-center gap-4 pt-1">
+            {/* App Store Buttons */}
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 sm:gap-4 pt-1">
               {/* Official Google Play Store Button */}
               <a
                 href="#"
-                className="flex items-center justify-between gap-4 px-6 py-3.5 rounded-xl bg-[#0d1322] border border-red-500/40 hover:border-red-500 text-white transition-all duration-300 shadow-[0_0_12px_rgba(255,59,48,0.1)] hover:shadow-[0_0_18px_rgba(255,59,48,0.25)] hover:scale-[1.02] min-w-[200px]"
+                className="flex items-center justify-center sm:justify-between gap-2 sm:gap-4 px-2 py-2 sm:px-6 sm:py-3.5 rounded-xl bg-[#0d1322] border border-red-500/40 hover:border-red-500 text-white transition-all duration-300 shadow-[0_0_12px_rgba(255,59,48,0.1)] hover:shadow-[0_0_18px_rgba(255,59,48,0.25)] hover:scale-[1.02] sm:min-w-[200px]"
               >
-                <div className="flex items-center gap-3">
-                  <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none">
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <svg className="h-5 w-5 sm:h-7 sm:w-7 shrink-0" viewBox="0 0 24 24" fill="none">
                     <path d="M3.6 1.8 C3.2 2.2 3 2.8 3 3.6 V20.4 C3 21.2 3.2 21.8 3.6 22.2 L3.7 22.3 L13.1 12.9 V12.7 V11.1 L3.7 1.7 L3.6 1.8 Z" fill="#00D2FF" />
                     <path d="M16.2 16 L13.1 12.9 V11.1 L16.2 8 L16.3 8.1 L20 10.2 C21.1 10.8 21.1 11.8 20 12.4 L16.3 14.5 L16.2 16 Z" fill="#FFC700" />
                     <path d="M16.3 14.5 L13.1 11.3 L3.6 20.8 C4 21.2 4.7 21.3 5.5 20.8 L16.3 14.5 Z" fill="#FF3A44" />
                     <path d="M16.3 9.5 L5.5 3.2 C4.7 2.7 4 2.8 3.6 3.2 L13.1 12.7 L16.3 9.5 Z" fill="#00E676" />
                   </svg>
                   <div className="text-left">
-                    <p className="text-[9px] uppercase tracking-wider text-slate-400 font-bold leading-none">GET IT ON</p>
-                    <p className="text-sm font-black leading-tight text-white mt-0.5">Google Play</p>
+                    <p className="text-[7px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold leading-none">GET IT ON</p>
+                    <p className="text-[10px] sm:text-sm font-black leading-tight text-white mt-0.5">Google Play</p>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[#ff3b30] shrink-0" />
+                <ArrowRight className="hidden sm:block h-4 w-4 text-[#ff3b30] shrink-0" />
               </a>
 
               {/* Apple App Store Button */}
               <a
                 href="#"
-                className="flex items-center justify-between gap-4 px-6 py-3.5 rounded-xl bg-[#0d1322] border border-slate-700/80 hover:border-slate-500 text-white transition-all duration-300 hover:scale-[1.02] min-w-[200px]"
+                className="flex items-center justify-center sm:justify-between gap-2 sm:gap-4 px-2 py-2 sm:px-6 sm:py-3.5 rounded-xl bg-[#0d1322] border border-slate-700/80 hover:border-slate-500 text-white transition-all duration-300 hover:scale-[1.02] sm:min-w-[200px]"
               >
-                <div className="flex items-center gap-3">
-                  <svg className="h-7 w-7 fill-current text-white shrink-0" viewBox="0 0 24 24">
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <svg className="h-5 w-5 sm:h-7 sm:w-7 fill-current text-white shrink-0" viewBox="0 0 24 24">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.85c.66-.8 1.11-1.92.99-3.04-.96.04-2.13.64-2.82 1.44-.61.71-1.15 1.86-1.01 2.96 1.08.08 2.18-.56 2.84-1.36z"/>
                   </svg>
                   <div className="text-left">
-                    <p className="text-[9px] uppercase tracking-wider text-slate-400 font-bold leading-none">DOWNLOAD ON THE</p>
-                    <p className="text-sm font-black leading-tight text-white mt-0.5">App Store</p>
+                    <p className="text-[7px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold leading-none">DOWNLOAD ON THE</p>
+                    <p className="text-[10px] sm:text-sm font-black leading-tight text-white mt-0.5">App Store</p>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-slate-400 shrink-0" />
+                <ArrowRight className="hidden sm:block h-4 w-4 text-slate-400 shrink-0" />
               </a>
             </div>
 

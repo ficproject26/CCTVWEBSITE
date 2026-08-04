@@ -292,31 +292,31 @@ export function InstallationProcessSection() {
           </div>
 
           {/* 6 High-Tech Dark Glass Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-6 gap-2 sm:gap-4">
             {installationStepsDetailed.map((item, index) => {
               const IconComponent = item.icon;
               return (
                 <div
                   key={index}
-                  className={`bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-2xl transition-all duration-300 group ${item.accentBorder} hover:-translate-y-1`}
+                  className={`bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-5 flex flex-col justify-between space-y-2 sm:space-y-4 shadow-xl hover:shadow-2xl transition-all duration-300 group ${item.accentBorder} hover:-translate-y-1`}
                 >
-                  <div className="flex flex-col items-center text-center space-y-3">
-                    <div className="lg:hidden h-7 w-7 rounded-full bg-[#ff3b30] text-white text-xs font-extrabold flex items-center justify-center shadow-md">
+                  <div className="flex flex-col items-center text-center space-y-1.5 sm:space-y-3">
+                    <div className="lg:hidden h-5 w-5 sm:h-7 sm:w-7 rounded-full bg-[#ff3b30] text-white text-[10px] sm:text-xs font-extrabold flex items-center justify-center shadow-md">
                       {item.num}
                     </div>
 
                     <div
-                      className={`h-14 w-14 rounded-2xl flex items-center justify-center border shadow-inner group-hover:scale-110 transition-transform ${item.iconBg}`}
+                      className={`h-8 w-8 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl flex items-center justify-center border shadow-inner group-hover:scale-110 transition-transform ${item.iconBg}`}
                     >
-                      <IconComponent className="h-7 w-7 stroke-[1.8]" />
+                      <IconComponent className="h-4 w-4 sm:h-7 sm:w-7 stroke-[1.8]" />
                     </div>
 
-                    <h3 className="font-extrabold text-sm text-white leading-tight">
+                    <h3 className="font-extrabold text-[9px] sm:text-sm text-white leading-tight">
                       {item.title}
                     </h3>
                   </div>
 
-                  <ul className="space-y-2 text-left pt-3 border-t border-slate-800/80">
+                  <ul className="hidden sm:block space-y-2 text-left pt-3 border-t border-slate-800/80">
                     {item.points.map((pt, pIdx) => (
                       <li key={pIdx} className="flex items-start gap-1.5 text-[11px] text-slate-300 font-medium">
                         <Check className="h-3.5 w-3.5 text-[#ff3b30] shrink-0 mt-0.5" />
@@ -325,11 +325,11 @@ export function InstallationProcessSection() {
                     ))}
                   </ul>
 
-                  <div className="pt-2 text-center">
+                  <div className="pt-1 sm:pt-2 text-center">
                     <span
-                      className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${item.timePill}`}
+                      className={`inline-flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full border ${item.timePill}`}
                     >
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       <span>{item.time}</span>
                     </span>
                   </div>
@@ -340,16 +340,16 @@ export function InstallationProcessSection() {
         </div>
 
         {/* Bottom Dark CTA Banner ("Ready to Secure Your Space?") */}
-        <div className="bg-gradient-to-r from-slate-900 via-[#0d1329] to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-[#ff3b30] shrink-0">
-              <ShieldCheck className="h-8 w-8 text-[#ff3b30]" />
+        <div className="bg-gradient-to-r from-slate-900 via-[#0d1329] to-slate-900 text-white rounded-2xl p-4 sm:p-8 shadow-2xl border border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-[#ff3b30] shrink-0">
+              <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-[#ff3b30]" />
             </div>
-            <div className="space-y-1">
-              <h3 className="text-xl sm:text-2xl font-black text-white">
+            <div className="space-y-0.5 sm:space-y-1">
+              <h3 className="text-lg sm:text-2xl font-black text-white">
                 Ready to Secure Your Space?
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300">
+              <p className="text-[10px] sm:text-sm text-slate-300">
                 Book a free site visit today and get expert advice from our security professionals.
               </p>
             </div>
@@ -370,39 +370,39 @@ export function InstallationProcessSection() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 w-full lg:w-auto shrink-0 mt-1 sm:mt-0">
             <Link
               to="/contact"
-              className="w-full sm:w-auto bg-[#ff3b30] hover:bg-[#e03126] text-white font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg shadow-red-600/30 hover:shadow-red-600/50 transition-all text-center flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-[#ff3b30] hover:bg-[#e03126] text-white font-extrabold text-[11px] sm:text-xs uppercase tracking-wider px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl shadow-lg shadow-red-600/30 hover:shadow-red-600/50 transition-all text-center flex items-center justify-center gap-2"
             >
-              <CalendarCheck className="h-4 w-4" />
+              <CalendarCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span>Book Free Site Visit →</span>
             </Link>
 
             <a
               href="tel:+919876543210"
-              className="w-full sm:w-auto border border-slate-700 hover:bg-slate-800/80 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2"
+              className="w-full sm:w-auto border border-slate-700 hover:bg-slate-800/80 text-white font-bold text-[11px] sm:text-xs px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2"
             >
-              <PhoneCall className="h-4 w-4 text-emerald-400" />
+              <PhoneCall className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-400" />
               <span>Call Now: +91 98765 43210</span>
             </a>
           </div>
         </div>
 
         {/* Footer Info Highlights Line */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-slate-400 pt-2 text-center">
+        <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs font-semibold text-slate-400 pt-2 text-center">
           <div className="flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5 text-[#ff3b30]" />
+            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#ff3b30]" />
             <span>Our average installation time: <strong className="text-white">2 - 4 Hours</strong></span>
           </div>
           <span className="hidden sm:inline text-slate-700">|</span>
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5 text-[#ff3b30]" />
+            <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#ff3b30]" />
             <span>Service available in major cities</span>
           </div>
           <span className="hidden sm:inline text-slate-700">|</span>
           <div className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-[#ff3b30]" />
+            <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#ff3b30]" />
             <span>Emergency support available <strong className="text-white">24/7</strong></span>
           </div>
         </div>

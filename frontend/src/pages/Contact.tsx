@@ -60,22 +60,22 @@ export default function Contact() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto pt-8">
             {/* Phone Card */}
             <a
-              href="tel:+18001234567"
+              href="tel:+919600975483"
               className="p-5 bg-gray-900/90 border border-gray-800 hover:border-red-500/60 rounded-2xl text-left transition-all group hover:scale-[1.02]"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500 group-hover:text-white transition-all">
                   <Phone className="h-5 w-5" />
                 </div>
-                <span className="text-[10px] uppercase font-bold text-green-400 bg-green-500/10 px-2 py-0.5 rounded">Toll Free</span>
+                <span className="text-[10px] uppercase font-bold text-green-400 bg-green-500/10 px-2 py-0.5 rounded">24/7 Service</span>
               </div>
               <p className="text-xs text-gray-400 font-medium">Call Sales & Support</p>
-              <p className="text-base font-extrabold text-white group-hover:text-red-400 transition-colors">+1 (800) 123-4567</p>
+              <p className="text-base font-extrabold text-white group-hover:text-red-400 transition-colors">+91 96009 75483</p>
             </a>
 
             {/* WhatsApp Card */}
             <a
-              href="https://wa.me/18001234567"
+              href="https://wa.me/919600975483"
               target="_blank"
               rel="noopener noreferrer"
               className="p-5 bg-gray-900/90 border border-gray-800 hover:border-green-500/60 rounded-2xl text-left transition-all group hover:scale-[1.02]"
@@ -249,18 +249,18 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="space-y-2 text-xs text-muted-foreground">
+              <div className="space-y-3 text-xs text-muted-foreground">
                 <p className="flex items-start gap-2">
                   <span className="font-bold text-foreground shrink-0">Address:</span>
-                  <span>123 Security Blvd, Tech District, NY 10001</span>
+                  <span className="leading-tight">Down street, 2/222A, Berigai - Shoolagiri Rd,<br/>Dhoodi, Shoolagiri, Tamil Nadu 635117</span>
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="font-bold text-foreground shrink-0">Showroom Hours:</span>
-                  <span>Mon – Sat: 8:00 AM – 8:00 PM EST</span>
+                  <span>Mon – Sat: 9:00 AM – 8:00 PM IST</span>
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="font-bold text-foreground shrink-0">Support Mail:</span>
-                  <span>info@sktech.com</span>
+                  <span>sktechnologycctv@gmail.com</span>
                 </p>
               </div>
             </div>

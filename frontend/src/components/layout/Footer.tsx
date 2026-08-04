@@ -18,81 +18,7 @@ export default function Footer() {
     <footer className="bg-[#0b0f19] text-gray-200 border-t border-gray-800/80 mt-16 pt-12 pb-8">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Consolidated 4 Contact Touchpoints Row Bar */}
-        <div className="bg-slate-900/90 border border-gray-800/90 rounded-2xl p-6 mb-12 shadow-xl backdrop-blur-sm">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div>
-              <h4 className="text-white font-black text-base uppercase tracking-tight flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#ff3b30] animate-pulse"></span>
-                <span>GET IN TOUCH & CONNECT WITH US</span>
-              </h4>
-              <p className="text-gray-400 text-xs mt-1">
-                Instant support available 24/7 across our official direct channels.
-              </p>
-            </div>
 
-            {/* 4 Touchpoints Grouped Row: WhatsApp, Phone, Email, Instagram */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto">
-              
-              {/* 1. WhatsApp */}
-              <a
-                href="https://wa.me/919876543210"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Chat on WhatsApp"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366] text-[#25D366] hover:text-white transition-all duration-200 group"
-              >
-                <MessageCircle className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 group-hover:text-white/80">WhatsApp</span>
-                  <span className="text-xs font-extrabold whitespace-nowrap">Chat Now</span>
-                </div>
-              </a>
-
-              {/* 2. Phone */}
-              <a
-                href="tel:18001234567"
-                aria-label="Call support phone number"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-600 text-blue-400 hover:text-white transition-all duration-200 group"
-              >
-                <Phone className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 group-hover:text-white/80">Phone</span>
-                  <span className="text-xs font-extrabold whitespace-nowrap">1800-123-4567</span>
-                </div>
-              </a>
-
-              {/* 3. Email */}
-              <a
-                href="mailto:info@sktechnology.com"
-                aria-label="Send us an email"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 hover:bg-[#ff3b30] text-red-400 hover:text-white transition-all duration-200 group"
-              >
-                <Mail className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 group-hover:text-white/80">Email</span>
-                  <span className="text-xs font-extrabold whitespace-nowrap">Email Us</span>
-                </div>
-              </a>
-
-              {/* 4. Instagram */}
-              <a
-                href="https://instagram.com/sktechnology"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Follow us on Instagram"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:bg-gradient-to-r hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 text-purple-400 hover:text-white transition-all duration-200 group"
-              >
-                <InstagramIcon className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 group-hover:text-white/80">Instagram</span>
-                  <span className="text-xs font-extrabold whitespace-nowrap">@sktechnology</span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-        </div>
 
         {/* Footer 4 Columns Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
@@ -138,15 +64,15 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-                <span>123 Security Blvd, Tech District, NY 10001</span>
+                <span className="leading-tight">Down street, 2/222A, Berigai - Shoolagiri Rd,<br/>Dhoodi, Shoolagiri, Tamil Nadu 635117</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-red-500 shrink-0" />
-                <span>+1 (800) 123-4567</span>
+                <span>+91 96009 75483, +91 99402 52983</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-red-500 shrink-0" />
-                <span>info@sktechnology.com</span>
+                <span>sktechnologycctv@gmail.com</span>
               </li>
             </ul>
           </div>

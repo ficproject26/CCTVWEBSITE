@@ -124,17 +124,17 @@ export default function Header() {
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Contact Details */}
           <div className="flex items-center gap-6">
-            <a href="tel:+18001234567" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="tel:+919600975483" className="flex items-center gap-2 hover:text-white transition-colors">
               <Phone className="h-4 w-4 text-red-500" />
-              <span className="font-medium">+1 (800) 123-4567</span>
+              <span className="font-medium">+91 96009 75483</span>
             </a>
-            <a href="mailto:info@sktech.com" className="hidden sm:flex items-center gap-2 hover:text-white transition-colors">
+            <a href="mailto:sktechnologycctv@gmail.com" className="hidden sm:flex items-center gap-2 hover:text-white transition-colors">
               <Mail className="h-4 w-4 text-red-500" />
-              <span>info@sktech.com</span>
+              <span>sktechnologycctv@gmail.com</span>
             </a>
             <div className="hidden lg:flex items-center gap-2">
               <MapPin className="h-4 w-4 text-red-500" />
-              <span>123 Security Ave, NY</span>
+              <span className="truncate max-w-[200px]">Shoolagiri, Tamil Nadu</span>
             </div>
           </div>
 

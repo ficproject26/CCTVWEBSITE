@@ -98,38 +98,86 @@ export default function CustomerTestimonials() {
           </h2>
 
           {/* Sub-description */}
-          <p className="text-slate-600 text-xs leading-relaxed font-medium">
+          <p className="text-slate-600 text-[11px] sm:text-xs leading-relaxed font-medium">
             Real experiences from real customers who trust our CCTV solutions for their safety and security.
           </p>
         </div>
 
-        {/* Testimonials Carousel Wrapper with Navigation Arrows */}
-        <div className="relative">
+        {/* --- MOBILE VIEW: Horizontal Swipe Carousel (All items) --- */}
+        <div className="sm:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] -mx-4 px-4 pt-2">
+          {testimonials.map((item, index) => (
+            <div
+              key={index}
+              className="w-[85vw] shrink-0 snap-center bg-white border border-gray-100/90 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-3 relative overflow-hidden min-h-[190px]"
+            >
+              {/* Watermark Quotation Icon */}
+              <div className="absolute top-2 right-3 text-4xl text-red-100/50 font-serif select-none pointer-events-none">
+                “
+              </div>
+
+              <div className="space-y-2.5 relative z-10">
+                <div className="flex items-center gap-2.5 pr-4">
+                  <img
+                    src={item.avatar}
+                    alt={item.name}
+                    className="w-9 h-9 rounded-full object-cover border-2 border-red-50 shadow-sm shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-extrabold text-[11px] text-slate-900 leading-snug truncate">
+                      {item.name}
+                    </h3>
+                    <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">
+                      {item.role}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {[...Array(item.rating)].map((_, i) => (
+                    <Star key={i} className="h-3 w-3 fill-amber-400 stroke-amber-400" />
+                  ))}
+                </div>
+                <p className="text-[11px] text-slate-600 font-normal leading-relaxed">
+                  {item.comment}
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-gray-100/80 relative z-10 mt-2">
+                <div className="inline-flex items-center gap-1.5 text-[#ff3b30] text-[9px] font-bold bg-red-50/80 px-2 py-0.5 rounded-full border border-red-100/60">
+                  <ShieldCheck className="h-2.5 w-2.5 text-[#ff3b30]" />
+                  <span>{item.timeAgo}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* --- DESKTOP VIEW: Grid with Pagination (Paginated items) --- */}
+        <div className="hidden sm:block relative">
           
           {/* Navigation Arrow - Left */}
           <button
             onClick={handlePrev}
-            className="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-20 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
+            className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
             aria-label="Previous Testimonials"
           >
-            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+            <ChevronLeft className="h-5 w-5" />
           </button>
 
           {/* Navigation Arrow - Right */}
           <button
             onClick={handleNext}
-            className="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-20 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
+            className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-red-300 text-gray-700 hover:text-[#ff3b30] flex items-center justify-center transition-all duration-300 active:scale-95"
             aria-label="Next Testimonials"
           >
-            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+            <ChevronRight className="h-5 w-5" />
           </button>
 
-          {/* 4 Testimonials Cards Grid (Compact Dimensions) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* 4 Testimonials Cards Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {displayedTestimonials.map((item, index) => (
               <div
                 key={index}
-                className="bg-white border border-gray-100/90 rounded-2xl p-4 sm:p-4.5 shadow-sm hover:shadow-md hover:border-red-100 transition-all duration-300 flex flex-col justify-between space-y-3.5 relative overflow-hidden group min-h-[220px]"
+                className="bg-white border border-gray-100/90 rounded-2xl p-4.5 shadow-sm hover:shadow-md hover:border-red-100 transition-all duration-300 flex flex-col justify-between space-y-3.5 relative overflow-hidden group min-h-[220px]"
               >
                 {/* Watermark Quotation Icon */}
                 <div className="absolute top-2.5 right-3 text-4xl text-red-100/50 font-serif select-none pointer-events-none group-hover:text-red-200/70 transition-colors">
@@ -179,22 +227,21 @@ export default function CustomerTestimonials() {
             ))}
           </div>
 
-        </div>
-
-        {/* Carousel Pagination Dots Indicator */}
-        <div className="flex items-center justify-center gap-1.5 pt-1">
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActivePage(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                activePage === i
-                  ? "w-6 bg-[#ff3b30]"
-                  : "w-2 bg-red-200 hover:bg-red-300"
-              }`}
-              aria-label={`Go to testimonial page ${i + 1}`}
-            />
-          ))}
+          {/* Carousel Pagination Dots Indicator */}
+          <div className="flex items-center justify-center gap-1.5 pt-5">
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActivePage(i)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  activePage === i
+                    ? "w-6 bg-[#ff3b30]"
+                    : "w-2 bg-red-200 hover:bg-red-300"
+                }`}
+                aria-label={`Go to testimonial page ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
       </div>
