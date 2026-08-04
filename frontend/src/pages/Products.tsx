@@ -1243,7 +1243,7 @@ export default function Products() {
               <div
                 className={
                   viewMode === "grid"
-                    ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+                    ? "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
                     : "space-y-4"
                 }
               >
@@ -1256,8 +1256,8 @@ export default function Products() {
                   >
                     {/* Image Area */}
                     <div
-                      className={`relative bg-gray-50/80 overflow-hidden flex items-center justify-center p-4 ${
-                        viewMode === "grid" ? "h-48 w-full" : "h-40 w-full sm:w-48 shrink-0 rounded-xl"
+                      className={`relative bg-gray-50/80 overflow-hidden flex items-center justify-center p-2 sm:p-4 ${
+                        viewMode === "grid" ? "h-36 sm:h-48 w-full" : "h-40 w-full sm:w-48 shrink-0 rounded-xl"
                       }`}
                     >
                       {/* Badge Top Left */}
@@ -1367,18 +1367,18 @@ export default function Products() {
                       </div>
 
                       {/* Card Footer Action: Side-by-Side Cart & Buy Now */}
-                      <div className="pt-2 flex items-center gap-2">
+                      <div className="pt-2 flex flex-col 2xl:flex-row gap-2">
                         <button
                           onClick={() => handleAddToCart(product)}
-                          className="flex-1 h-9 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-350 text-slate-700 text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm hover:scale-[1.02] duration-200"
+                          className="flex-1 h-8 sm:h-9 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-350 text-slate-700 text-[10px] sm:text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm hover:scale-[1.02] duration-200"
                           title="Add to Cart"
                         >
-                          <ShoppingCart className="h-3.5 w-3.5" />
+                          <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           <span>Cart</span>
                         </button>
                         <button
                           onClick={() => handleBuyNow(product)}
-                          className="flex-1 h-9 rounded-xl bg-[#ff3b30] hover:bg-red-600 text-white text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm hover:scale-[1.02] duration-200"
+                          className="flex-1 h-8 sm:h-9 rounded-xl bg-[#ff3b30] hover:bg-red-600 text-white text-[10px] sm:text-xs font-extrabold flex items-center justify-center gap-1 transition-all shadow-sm hover:scale-[1.02] duration-200"
                         >
                           <span>Buy Now</span>
                         </button>
