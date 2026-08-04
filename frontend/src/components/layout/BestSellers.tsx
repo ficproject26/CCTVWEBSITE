@@ -127,7 +127,7 @@ export default function BestSellers() {
           {/* Scroll Prev Button */}
           <button
             onClick={scrollLeft}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-300 shadow-md flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-50 transition-all opacity-90 group-hover:opacity-100"
+            className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-300 shadow-md items-center justify-center text-gray-700 hover:text-black hover:bg-gray-50 transition-all opacity-90 group-hover:opacity-100"
             aria-label="Scroll left"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -136,7 +136,7 @@ export default function BestSellers() {
           {/* Scroll Next Button */}
           <button
             onClick={scrollRight}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-300 shadow-md flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-50 transition-all opacity-90 group-hover:opacity-100"
+            className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-gray-300 shadow-md items-center justify-center text-gray-700 hover:text-black hover:bg-gray-50 transition-all opacity-90 group-hover:opacity-100"
             aria-label="Scroll right"
           >
             <ChevronRight className="h-5 w-5" />
@@ -145,16 +145,16 @@ export default function BestSellers() {
           {/* Product Cards Slider */}
           <div
             ref={sliderRef}
-            className="flex items-stretch gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-2 pt-1 px-1"
+            className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none scroll-smooth pb-2 pt-1 px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] -mx-4 px-4 sm:mx-0 sm:px-1"
           >
             {products.map((product) => (
               <div
                 key={product.id}
-                className="w-[230px] sm:w-[250px] shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group/card relative"
+                className="w-[160px] sm:w-[250px] shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group/card relative snap-start"
               >
                 <div>
                   {/* Photo Area */}
-                  <div className="relative bg-gray-50 h-44 p-3 flex items-center justify-center overflow-hidden">
+                  <div className="relative bg-gray-50 h-32 sm:h-44 p-3 flex items-center justify-center overflow-hidden">
                     {/* Badge */}
                     {product.badge && (
                       <span className="absolute top-2.5 left-2.5 bg-[#e53935] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm z-10">
