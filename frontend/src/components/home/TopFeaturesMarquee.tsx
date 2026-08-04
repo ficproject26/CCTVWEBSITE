@@ -69,12 +69,12 @@ export default function TopFeaturesMarquee() {
             return (
               <div
                 key={index}
-                className="w-48 h-44 bg-white border border-gray-200/90 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-gray-300 flex flex-col items-center justify-center text-center gap-3.5 shrink-0 transition-all duration-300 group cursor-pointer"
+                className="w-28 h-28 sm:w-48 sm:h-44 bg-white border border-gray-200/90 rounded-xl sm:rounded-2xl p-2 sm:p-5 shadow-sm hover:shadow-md hover:border-gray-300 flex flex-col items-center justify-center text-center gap-2 sm:gap-3.5 shrink-0 transition-all duration-300 group cursor-pointer"
               >
-                <div className="h-12 w-12 rounded-xl bg-gray-50 flex items-center justify-center text-slate-800 group-hover:bg-black group-hover:text-white group-hover:scale-110 transition-all duration-300">
-                  <IconComponent className="h-6 w-6 stroke-[1.8]" />
+                <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl bg-gray-50 flex items-center justify-center text-slate-800 group-hover:bg-black group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                  <IconComponent className="h-4 w-4 sm:h-6 sm:w-6 stroke-[1.8]" />
                 </div>
-                <span className="text-xs font-extrabold text-slate-800 leading-tight group-hover:text-black">
+                <span className="text-[9px] sm:text-xs font-extrabold text-slate-800 leading-tight group-hover:text-black">
                   {item.title}
                 </span>
               </div>

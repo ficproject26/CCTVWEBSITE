@@ -9,7 +9,7 @@ interface SKLogoProps {
 
 export const SKLogoIcon: React.FC<{ className?: string }> = ({ className = "h-10 w-auto" }) => (
   <img
-    src="/sktechlogo.jpeg"
+    src="/sklogo1.jpeg"
     alt="SK Technology Logo"
     className={`object-contain rounded-lg ${className}`}
   />
