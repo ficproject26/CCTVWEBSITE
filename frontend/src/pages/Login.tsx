@@ -159,7 +159,7 @@ export default function Login() {
             
             {/* Top Logo */}
             <div className="flex justify-start">
-              <SKLogo variant="horizontal" theme="original" iconClassName="h-18 w-auto" />
+              <SKLogo variant="iconOnly" theme="original" iconClassName="h-18 w-auto" />
             </div>
 
             {/* Card Header with Side-by-Side Content */}
@@ -373,7 +373,7 @@ export default function Login() {
             <div className="relative z-10 flex flex-col justify-between h-full">
               {/* Brand logo at top of sidebar */}
               <div className="flex justify-start text-white">
-                <SKLogo variant="horizontal" theme="light" iconClassName="h-15 w-auto" />
+                <SKLogo variant="iconOnly" theme="light" iconClassName="h-15 w-auto" />
               </div>
 
               {/* Mounted Wall Camera SVG Illustration */}
@@ -397,7 +397,7 @@ export default function Login() {
                 
                  {/* Logo top */}
                 <div className="flex justify-start">
-                  <SKLogo variant="horizontal" theme="original" iconClassName="h-18 w-auto" />
+                  <SKLogo variant="iconOnly" theme="original" iconClassName="h-18 w-auto" />
                 </div>
 
                 {/* Form Header */}
@@ -533,35 +533,35 @@ export default function Login() {
 
             {/* Bottom Trust Badges (Aligned at bottom of white right side) */}
             <div className="w-full bg-[#f8fafc] border-t border-slate-200/50 py-6 px-6 sm:px-12 mt-auto">
-              <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+              <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto grid grid-cols-3 gap-2 sm:gap-6 text-center">
                 {/* Badge 1 */}
-                <div className="flex flex-col sm:flex-row items-center gap-3.5">
-                  <div className="p-3 bg-red-50 text-red-500 rounded-full shrink-0 shadow-sm">
-                    <Shield className="h-5 w-5" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3.5">
+                  <div className="p-2 sm:p-3 bg-red-50 text-red-500 rounded-full shrink-0 shadow-sm">
+                    <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide leading-none">Secure & Reliable</h4>
-                    <p className="text-[10.5px] text-slate-500 font-semibold mt-1">Your data is safe with us</p>
+                    <h4 className="text-[9px] sm:text-xs font-bold text-slate-900 uppercase tracking-wide leading-none">Secure & Reliable</h4>
+                    <p className="hidden sm:block text-[10.5px] text-slate-500 font-semibold mt-1">Your data is safe with us</p>
                   </div>
                 </div>
                 {/* Badge 2 */}
-                <div className="flex flex-col sm:flex-row items-center gap-3.5">
-                  <div className="p-3 bg-red-50 text-red-500 rounded-full shrink-0 shadow-sm">
-                    <Headphones className="h-5 w-5" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3.5">
+                  <div className="p-2 sm:p-3 bg-red-50 text-red-500 rounded-full shrink-0 shadow-sm">
+                    <Headphones className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide leading-none">24/7 Support</h4>
-                    <p className="text-[10.5px] text-slate-500 font-semibold mt-1">We're always here to help you</p>
+                    <h4 className="text-[9px] sm:text-xs font-bold text-slate-900 uppercase tracking-wide leading-none">24/7 Support</h4>
+                    <p className="hidden sm:block text-[10.5px] text-slate-500 font-semibold mt-1">We're always here to help you</p>
                   </div>
                 </div>
                 {/* Badge 3 */}
-                <div className="flex flex-col sm:flex-row items-center gap-3.5">
-                  <div className="p-3 bg-red-50 text-red-500 rounded-full shrink-0 shadow-sm">
-                    <Users className="h-5 w-5" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3.5">
+                  <div className="p-2 sm:p-3 bg-red-50 text-red-500 rounded-full shrink-0 shadow-sm">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide leading-none">Trusted by 5000+</h4>
-                    <p className="text-[10.5px] text-slate-500 font-semibold mt-1">Customers across India</p>
+                    <h4 className="text-[9px] sm:text-xs font-bold text-slate-900 uppercase tracking-wide leading-none">Trusted by 5000+</h4>
+                    <p className="hidden sm:block text-[10.5px] text-slate-500 font-semibold mt-1">Customers across India</p>
                   </div>
                 </div>
               </div>
