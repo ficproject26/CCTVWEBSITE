@@ -208,7 +208,7 @@ export function WhyChooseUsSection() {
 
           {/* Right Column: 6 KPI Glassmorphism Cards */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
               {whyChooseCards.map((card, idx) => {
                 const IconComponent = card.icon;
                 return (
@@ -217,23 +217,23 @@ export function WhyChooseUsSection() {
                     className="bg-[#0d1322] border border-slate-800/90 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-3 hover:border-slate-700 hover:shadow-2xl transition-all duration-300 group min-h-[190px]"
                   >
                     <div
-                      className={`h-12 w-12 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${card.iconDiscBg}`}
+                      className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 ${card.iconDiscBg}`}
                     >
-                      <IconComponent className="h-6 w-6 stroke-[2]" />
+                      <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2]" />
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-black text-white leading-tight">
+                      <h3 className="text-sm sm:text-lg font-black text-white leading-tight">
                         {card.title}
                       </h3>
-                      <p className="text-xs text-slate-300 font-medium">
+                      <p className="text-[10px] sm:text-xs text-slate-300 font-medium">
                         {card.subtitle}
                       </p>
                     </div>
 
                     <span className="h-0.5 w-6 bg-[#ff3b30] rounded-full"></span>
 
-                    <p className="text-[11px] text-slate-400 font-normal leading-relaxed">
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 font-normal leading-relaxed">
                       {card.desc}
                     </p>
                   </div>
