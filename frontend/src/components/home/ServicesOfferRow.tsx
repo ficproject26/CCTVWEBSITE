@@ -5,10 +5,10 @@ export default function ServicesOfferRow() {
   return (
     <section className="py-7 bg-white border-b border-gray-100">
       <div className="container max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory pb-2 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] -mx-4 px-4 sm:mx-0 sm:px-0">
           
           {/* Card 1: FREE SITE VISIT */}
-          <div className="relative bg-[#f2f6ff] border border-blue-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
+          <div className="w-[85vw] sm:w-auto shrink-0 snap-start relative bg-[#f2f6ff] border border-blue-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
             <div className="space-y-1.5 z-10 max-w-[62%]">
               <h3 className="text-sm font-black uppercase text-slate-900 tracking-wide">
                 FREE SITE VISIT
@@ -38,7 +38,7 @@ export default function ServicesOfferRow() {
           </div>
 
           {/* Card 2: AMC PLANS */}
-          <div className="relative bg-[#f0fdf4] border border-emerald-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
+          <div className="w-[85vw] sm:w-auto shrink-0 snap-start relative bg-[#f0fdf4] border border-emerald-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
             <div className="space-y-1.5 z-10 max-w-[62%]">
               <h3 className="text-sm font-black uppercase text-slate-900 tracking-wide">
                 AMC PLANS
@@ -64,7 +64,7 @@ export default function ServicesOfferRow() {
           </div>
 
           {/* Card 3: INSTALLATION SERVICE */}
-          <div className="relative bg-[#fff8f0] border border-orange-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
+          <div className="w-[85vw] sm:w-auto shrink-0 snap-start relative bg-[#fff8f0] border border-orange-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
             <div className="space-y-1.5 z-10 max-w-[62%]">
               <h3 className="text-sm font-black uppercase text-slate-900 tracking-wide">
                 INSTALLATION SERVICE
@@ -90,7 +90,7 @@ export default function ServicesOfferRow() {
           </div>
 
           {/* Card 4: 24/7 SUPPORT */}
-          <div className="relative bg-[#f0f8ff] border border-sky-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
+          <div className="w-[85vw] sm:w-auto shrink-0 snap-start relative bg-[#f0f8ff] border border-sky-100/80 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group min-h-[140px]">
             <div className="space-y-1.5 z-10 max-w-[62%]">
               <h3 className="text-sm font-black uppercase text-slate-900 tracking-wide">
                 24/7 SUPPORT
