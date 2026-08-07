@@ -46,6 +46,9 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, priority, size
     };
 
     switch (status) {
+      case 'ASSIGNED':
+        statusConfig = { bg: 'bg-zinc-100 text-zinc-800 border-zinc-200', dot: 'bg-amber-500', label: 'Pool Available' };
+        break;
       case 'PENDING':
         statusConfig = { bg: 'bg-amber-50 text-amber-900 border-amber-200', dot: 'bg-amber-500', label: 'Pending Start' };
         break;

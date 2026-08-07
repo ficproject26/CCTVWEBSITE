@@ -153,17 +153,17 @@ export const CompletionSummaryStep: React.FC<CompletionSummaryStepProps> = ({
     <form onSubmit={handleFinalSubmit} className="space-y-6">
       {/* Final Quality Audit Box */}
       <div className="border border-zinc-200 rounded-xl p-5 bg-white space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-900 flex items-center space-x-2">
-              <Award className="w-4 h-4 text-emerald-600" />
+        <div className="flex items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-xs sm:text-sm font-semibold text-zinc-900 flex items-center space-x-2">
+              <Award className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>Final Work Order Sign-off & Completion Audit</span>
             </h3>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-zinc-500 mt-0.5">
               Submit required completion text narrative & voice memo before final customer sign-off.
             </p>
           </div>
-          <span className="text-xs font-mono bg-zinc-100 text-zinc-800 px-2.5 py-1 rounded-md font-semibold">
+          <span className="text-xs font-mono bg-zinc-100 text-zinc-800 px-2.5 py-1 rounded-md font-semibold shrink-0 whitespace-nowrap">
             {job.jobCode}
           </span>
         </div>

@@ -52,17 +52,21 @@ export default function Header({ toggleMobileSidebar }) {
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between h-20 px-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 transition-colors">
-      {/* Left section: Toggle + Title */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={toggleMobileSidebar}
-          className="p-2 -ml-2 rounded-lg md:hidden hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
-        >
-          <FiMenu size={20} />
-        </button>
-        <div>
+      {/* Left section: Mobile Logo & Title */}
+      <div className="flex items-center gap-3">
+        {/* Mobile View Brand Logo + Company Name */}
+        <div className="flex items-center gap-2.5 md:hidden">
+          <img src="/logo.png" alt="SK Technology" className="w-8 h-8 object-contain rounded-lg bg-white p-0.5 shadow-2xs" />
+          <div>
+            <h2 className="text-xs font-black tracking-tight text-slate-900 dark:text-white leading-tight">SK TECHNOLOGY</h2>
+            <p className="text-[9px] font-bold text-red-600 uppercase tracking-widest leading-tight">CCTV Solutions</p>
+          </div>
+        </div>
+
+        {/* Desktop View Page Title */}
+        <div className="hidden md:block">
           <h2 className="ty-page-title">{getPageTitle()}</h2>
-          <p className="hidden sm:block ty-muted mt-0.5">Welcome back, {settings.contactPerson || 'Admin'}!</p>
+          <p className="ty-muted mt-0.5">Welcome back, {settings.contactPerson || 'Admin'}!</p>
         </div>
       </div>
 
@@ -217,6 +221,15 @@ export default function Header({ toggleMobileSidebar }) {
             </div>
           )}
         </div>
+
+        {/* Mobile Hamburger Menu Toggle Button (Moved to Right Side) */}
+        <button
+          onClick={toggleMobileSidebar}
+          className="p-2 rounded-xl md:hidden bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 transition-all cursor-pointer shadow-2xs active:scale-95"
+          title="Toggle Navigation Menu"
+        >
+          <FiMenu size={20} />
+        </button>
       </div>
     </header>
   );

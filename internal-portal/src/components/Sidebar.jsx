@@ -42,8 +42,9 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     { name: 'Orders', path: '/admin/orders', icon: FiShoppingCart },
     { name: 'Customers', path: '/admin/customers', icon: FiUsers },
     { name: 'Technicians', path: '/admin/technicians', icon: FiTool },
-    { name: 'Announcements', path: '/admin/announcements', icon: FiVolume2 },
     { name: 'Projects', path: '/admin/projects', icon: FiBriefcase },
+    { name: 'Project & Field Reports', path: '/admin/reports', icon: FiBarChart2 },
+    { name: 'Announcements', path: '/admin/announcements', icon: FiVolume2 },
     { name: 'Service Requests', path: '/admin/service-requests', icon: FiTool },
     { name: 'Queries', path: '/admin/queries', icon: FiHelpCircle },
     { name: 'Products', path: '/admin/products', icon: FiBox },
@@ -52,7 +53,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     { name: 'Brands', path: '/admin/brands', icon: FiAward },
     { name: 'Inventory', path: '/admin/inventory', icon: FiPackage },
     { name: 'Payments', path: '/admin/payments', icon: FiCreditCard },
-    { name: 'Reports', path: '/admin/reports', icon: FiBarChart2 },
     { name: 'Notifications', path: '/admin/notifications', icon: FiBell, badgeCount: unreadCount },
     { name: 'Settings', path: '/admin/settings', icon: FiSettings },
   ];

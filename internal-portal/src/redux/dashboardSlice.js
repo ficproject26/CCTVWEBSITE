@@ -1,5 +1,20 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import initialDb from '../mock-data/db.json';
+
+export const fetchDashboardData = createAsyncThunk(
+  'dashboard/fetchDashboardData',
+  async (_, { dispatch }) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        dispatch(setDashboardData(data.data));
+      }
+    } catch (err) {
+      console.warn('Dashboard fetch error:', err);
+    }
+  }
+);
 
 const getInitialCustomers = (orders) => {
   const customersMap = {};
@@ -279,9 +294,20 @@ const dashboardSlice = createSlice({
       });
     },
     approveOrder: (state, action) => {
-      const order = state.orders.find(o => o.id === action.payload);
+      const payload = action.payload;
+      const orderId = typeof payload === 'string' ? payload : payload.id;
+      const order = state.orders.find(o => o.id === orderId);
+      
       if (order) {
         order.status = 'Approved';
+        
+        if (typeof payload === 'object') {
+          order.orderCategory = payload.orderCategory;
+          order.requiredTechniciansCount = payload.requiredTechniciansCount;
+          order.estimatedDays = payload.estimatedDays;
+          order.startDate = payload.startDate;
+          order.targetCompletionDate = payload.targetCompletionDate;
+        }
         
         // Broadcast notification to all technicians
         state.notifications.unshift({

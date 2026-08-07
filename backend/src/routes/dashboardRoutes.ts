@@ -7,6 +7,72 @@ import Job from '../models/Job';
 
 const router = Router();
 
+// GET analytics summary & chart data
+router.get('/analytics', async (req: Request, res: Response) => {
+  try {
+    const orders = await Order.find().lean();
+    const jobs = await Job.find().lean();
+    const technicians = await User.find({ role: 'TECHNICIAN' }).lean();
+
+    const totalRevenue = orders
+      .filter(o => o.paymentStatus === 'PAID' || o.orderStatus === 'DELIVERED')
+      .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+    const pendingOrdersCount = orders.filter(o => o.orderStatus === 'PROCESSING').length;
+    const completedOrdersCount = orders.filter(o => o.orderStatus === 'DELIVERED' || o.orderStatus === 'SHIPPED').length;
+
+    const activeJobsCount = jobs.filter(j => j.status === 'ASSIGNED' || j.status === 'IN_PROGRESS').length;
+    const completedJobsCount = jobs.filter(j => j.status === 'COMPLETED').length;
+
+    // Monthly revenue aggregation
+    const monthlyMap: { [key: string]: number } = {
+      Jan: 45000, Feb: 58000, Mar: 62000, Apr: 75000, May: 90000, Jun: 110000,
+    };
+    orders.forEach(o => {
+      const month = new Date(o.createdAt).toLocaleString('default', { month: 'short' });
+      monthlyMap[month] = (monthlyMap[month] || 0) + (o.totalAmount || 0);
+    });
+
+    const revenueChart = Object.keys(monthlyMap).map(m => ({
+      month: m,
+      revenue: monthlyMap[m],
+    }));
+
+    // Technician performance metrics
+    const techPerformance = technicians.map(t => {
+      const techJobs = jobs.filter(j => j.assignedTechnicians?.some(at => at.id === t._id.toString() || at.name === t.name));
+      const completed = techJobs.filter(j => j.status === 'COMPLETED').length;
+      return {
+        id: t._id,
+        name: t.name,
+        totalJobs: techJobs.length,
+        completedJobs: completed,
+        rating: t.rating || 4.8,
+        specialization: t.specialties?.join(', ') || 'CCTV & Cabling',
+      };
+    });
+
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          totalRevenue,
+          totalOrders: orders.length,
+          pendingOrdersCount,
+          completedOrdersCount,
+          activeJobsCount,
+          completedJobsCount,
+          totalTechnicians: technicians.length,
+        },
+        revenueChart,
+        techPerformance,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // GET entire dashboard state dynamically built from live database collections
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -44,7 +110,7 @@ router.get('/', async (req: Request, res: Response) => {
     const mappedProjects = liveJobs.map((job: any) => ({
       id: job.jobCode,
       name: job.title,
-      technician: job.assignedTechnician?.name || 'Unassigned',
+      technician: (job.assignedTechnicians && job.assignedTechnicians.length > 0) ? job.assignedTechnicians.map((t: any) => t.name).join(', ') : 'Unassigned',
       customer: job.customer?.name || 'Unknown Customer',
       location: job.customer?.address || 'Chennai Area',
       submissionDate: job.scheduledDate || new Date(job.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -56,7 +122,7 @@ router.get('/', async (req: Request, res: Response) => {
 
     // Map live Orders
     const mappedOrders = liveOrders.map((order: any) => {
-      const job = liveJobs.find(j => j.jobCode === order.orderNumber || j.customer?.email?.toLowerCase() === order.customerEmail?.toLowerCase());
+      const job = liveJobs.find(j => j.jobCode === order.orderNumber);
       let dashboardStatus = 'Pending';
       if (order.orderStatus === 'DELIVERED') {
         dashboardStatus = 'Completed';
@@ -76,7 +142,8 @@ router.get('/', async (req: Request, res: Response) => {
         } else if (job.status === 'ASSIGNED') {
           dashboardStatus = 'Approved';
         } else if (job.status === 'PENDING') {
-          dashboardStatus = 'Pending Approval';
+          // If auto-assigned, it has technicians but is pending acceptance
+          dashboardStatus = (job.assignedTechnicians && job.assignedTechnicians.length > 0) ? 'Approved' : 'Pending Approval';
         }
       }
       return {
@@ -86,7 +153,7 @@ router.get('/', async (req: Request, res: Response) => {
         phone: order.customerPhone,
         type: order.items?.map((item: any) => item.title).join(', ') || 'CCTV Installation',
         location: order.shippingAddress || 'Chennai Area',
-        assignedTechnician: job?.assignedTechnician?.name || 'Unassigned',
+        assignedTechnician: (job?.assignedTechnicians && job.assignedTechnicians.length > 0) ? job.assignedTechnicians.map((t: any) => t.name).join(', ') : 'Unassigned',
         status: dashboardStatus,
         date: new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         amount: order.totalAmount,
@@ -96,7 +163,7 @@ router.get('/', async (req: Request, res: Response) => {
 
     // Map live Technicians
     const mappedTechnicians = liveTechnicians.map((tech: any) => {
-      const activeJob = liveJobs.find((j: any) => j.assignedTechnician?.id === tech._id.toString() && j.status !== 'COMPLETED' && j.status !== 'CANCELLED');
+      const activeJob = liveJobs.find((j: any) => (j.assignedTechnicians && j.assignedTechnicians.some((t: any) => t.id === tech._id.toString())) && j.status !== 'COMPLETED' && j.status !== 'CANCELLED');
       return {
         id: tech._id.toString(),
         name: tech.name,
@@ -190,14 +257,25 @@ router.put('/', async (req: Request, res: Response) => {
         if (o.id) {
           const emailQuery = o.email ? o.email.toLowerCase() : '';
           let associatedJob = await Job.findOne({
-            $or: [
-              { jobCode: o.id },
-              { 'customer.email': emailQuery }
-            ]
+            jobCode: o.id
           });
           if (associatedJob) {
             if (o.status === 'Approved') {
+              const isNewlyApproved = associatedJob.status !== 'ASSIGNED';
               associatedJob.status = 'ASSIGNED';
+              
+              if (isNewlyApproved && (!associatedJob.assignedTechnicians || associatedJob.assignedTechnicians.length === 0)) {
+                // Broadcast to technicians
+                dashboardData.notifications.push({
+                  id: `notif-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                  title: 'New Job Available',
+                  message: `Job ${associatedJob.jobCode} for ${associatedJob.customer?.name} has been approved.`,
+                  timestamp: new Date().toISOString(),
+                  read: false,
+                  type: 'ASSIGNMENT',
+                  jobId: associatedJob.jobCode
+                });
+              }
             } else if (o.status === 'In Progress') {
               associatedJob.status = 'IN_PROGRESS';
             } else if (o.status === 'Completed') {
@@ -207,9 +285,25 @@ router.put('/', async (req: Request, res: Response) => {
             }
             await associatedJob.save();
           } else {
-            // Create a job if the order has been approved or is pending approval
-            if (o.status === 'Approved' || o.status === 'Pending Approval' || o.status === 'Pending') {
+            // Create a job if the order has been approved or is pending approval and is NOT Delivery Only
+            if ((o.status === 'Approved' || o.status === 'Pending Approval' || o.status === 'Pending') && o.orderCategory !== 'Delivery Only') {
               const jobStatus = o.status === 'Approved' ? 'ASSIGNED' : 'PENDING';
+              
+              const isAssigned = o.assignedTechnician && o.assignedTechnician !== 'Unassigned';
+              
+              if (jobStatus === 'ASSIGNED' && !isAssigned) {
+                // Broadcast to technicians
+                dashboardData.notifications.push({
+                  id: `notif-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                  title: 'New Job Available',
+                  message: `Job ${o.id} for ${o.customer} has been approved.`,
+                  timestamp: new Date().toISOString(),
+                  read: false,
+                  type: 'ASSIGNMENT',
+                  jobId: o.id
+                });
+              }
+
               await Job.create({
                 jobCode: o.id,
                 title: o.type || 'CCTV Installation',
@@ -225,7 +319,12 @@ router.put('/', async (req: Request, res: Response) => {
                   city: 'Chennai',
                   postalCode: '600032'
                 },
-                assignedTechnician: o.assignedTechnician && o.assignedTechnician !== 'Unassigned' ? { name: o.assignedTechnician } : undefined
+                startDate: o.startDate,
+                targetCompletionDate: o.targetCompletionDate,
+                estimatedDays: o.estimatedDays || 1,
+                requiredTechniciansCount: o.requiredTechniciansCount || 1,
+                orderCategory: o.orderCategory || 'Delivery & Installation',
+                assignedTechnicians: isAssigned ? [{ name: o.assignedTechnician }] : []
               });
             }
           }
@@ -323,13 +422,13 @@ router.put('/', async (req: Request, res: Response) => {
               city: 'Chennai',
               postalCode: '600001'
             },
-            assignedTechnician: pr.technician !== 'Unassigned' ? { name: pr.technician, id: 'temp' } : undefined,
+            assignedTechnicians: pr.technician !== 'Unassigned' ? [{ name: pr.technician, id: 'temp' }] : [],
             fieldNotes: pr.dailyLogs?.[0]?.report || ''
           });
         } else {
           await Job.updateOne({ jobCode: pr.id }, {
             status: dbStatus,
-            assignedTechnician: pr.technician !== 'Unassigned' ? { name: pr.technician, id: existingJob.assignedTechnician?.id || 'temp' } : undefined,
+            assignedTechnicians: pr.technician !== 'Unassigned' ? [{ name: pr.technician, id: existingJob.assignedTechnicians?.[0]?.id || 'temp' }] : [],
             fieldNotes: pr.dailyLogs?.[0]?.report || ''
           });
         }

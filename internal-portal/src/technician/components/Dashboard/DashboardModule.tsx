@@ -37,16 +37,19 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
   onSelectJob,
   onOpenWorkflow,
 }) => {
-  const activeJob = jobs.find((j) => j.status === 'IN_PROGRESS' || j.status === 'ACCEPTED');
-  const pendingJobs = jobs.filter((j) => j.status === 'PENDING');
-  const completedJobs = jobs.filter((j) => j.status === 'COMPLETED');
-  const inProgressJobs = jobs.filter((j) => j.status === 'IN_PROGRESS' || j.status === 'ACCEPTED');
+  const myAssignedJobs = jobs.filter((j) => j.isAssignedToMe);
+  const availablePoolJobs = jobs.filter((j) => j.isAvailableToAccept);
+
+  const activeJob = jobs.find((j) => (j.status === 'IN_PROGRESS' || j.status === 'ACCEPTED') && j.isAssignedToMe);
+  const pendingJobs = myAssignedJobs.filter((j) => j.status === 'PENDING');
+  const completedJobs = myAssignedJobs.filter((j) => j.status === 'COMPLETED');
+  const inProgressJobs = myAssignedJobs.filter((j) => j.status === 'IN_PROGRESS' || j.status === 'ACCEPTED');
 
   const totalHoursLogged = completedJobs.reduce((sum, job) => 
     sum + (job.dailyReports?.reduce((total, r) => total + (r.hoursWorked || 0), 0) || 0), 0
   );
   const firstTimeFixRate = completedJobs.length > 0 ? 100.0 : 0.0;
-  const safetyScore = jobs.length > 0 ? 100 : 0;
+  const safetyScore = myAssignedJobs.length > 0 ? 100 : 0;
 
   const nextJob = activeJob || jobs[0];
 
@@ -123,8 +126,8 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
           </div>
         </div>
       </div>
-      {/* 6 High-Performance Metric Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
+      {/* 6 High-Performance Metric Cards Row - Mobile 2 Cols, Desktop Preserved */}
+      <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-3 sm:gap-4">
         {isLoading ? (
           [...Array(6)].map((_, idx) => (
             <div key={idx} className="bg-white border border-zinc-200/90 rounded-2xl p-5 shadow-2xs animate-pulse space-y-3">
@@ -152,23 +155,23 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
               </div>
 
               <div className="mt-3 flex items-baseline justify-between">
-                <p className="text-3xl font-black text-zinc-900 tracking-tight">{jobs.length}</p>
+                <p className="text-3xl font-black text-zinc-900 tracking-tight">{myAssignedJobs.length}</p>
                 <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md font-mono ${
-                  jobs.length > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-zinc-500 bg-zinc-50'
+                  myAssignedJobs.length > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-zinc-500 bg-zinc-50'
                 }`}>
-                  {jobs.length > 0 ? 'Active' : 'Idle'}
+                  {myAssignedJobs.length > 0 ? 'Active' : '0 Assigned'}
                 </span>
               </div>
 
               <p className="text-[11px] font-semibold text-zinc-500 mt-1.5 flex items-center space-x-1">
-                <span>{jobs.length} Orders</span>
+                <span>{myAssignedJobs.length} Assigned</span>
                 <span className="text-zinc-300">•</span>
-                <span className="text-zinc-400 font-normal">Assigned</span>
+                <span className="text-amber-600 font-normal">{availablePoolJobs.length} Available Pool</span>
               </p>
 
               {/* Tiny Progress Bar */}
               <div className="w-full bg-zinc-100 h-1 rounded-full mt-3 overflow-hidden">
-                <div className="bg-zinc-900 h-full rounded-full transition-all duration-500" style={{ width: jobs.length > 0 ? '100%' : '0%' }} />
+                <div className="bg-zinc-900 h-full rounded-full transition-all duration-500" style={{ width: myAssignedJobs.length > 0 ? '100%' : '0%' }} />
               </div>
             </div>
 

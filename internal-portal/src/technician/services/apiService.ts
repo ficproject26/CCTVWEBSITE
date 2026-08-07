@@ -287,7 +287,8 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const JobsApiService = {
   async getAssignedJobs(options: JobFilterOptions): Promise<PaginatedJobsResponse> {
     const techId = localStorage.getItem('user_id');
-    if (!techId) {
+    const techName = localStorage.getItem('user_name');
+    if (!techId && !techName) {
       return {
         data: [],
         total: 0,
@@ -299,52 +300,89 @@ export const JobsApiService = {
     }
 
     try {
-      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs?technicianId=${techId}&status=${options.status !== 'ALL' ? options.status : ''}&search=${options.searchQuery}`;
+      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs?technicianId=${techId || ''}&technicianName=${encodeURIComponent(techName || '')}&includeAvailable=true&status=${options.status !== 'ALL' ? options.status : ''}&search=${options.searchQuery}`;
       const res = await fetch(url);
       const resData = await res.json();
-      const rawJobs = resData.data || [];
+      let rawJobs = resData.data || [];
+
+      const lowerTechName = techName?.toLowerCase().trim();
+
+      const getAssignedTechName = (j: any) => {
+        const techList = j.assignedTechnicians || (j.assignedTechnician ? [j.assignedTechnician] : []);
+        if (techList && techList.length > 0 && techList[0].name && techList[0].name !== 'Unassigned' && techList[0].name !== 'Unassigned Technician') {
+          return techList[0].name;
+        }
+        if (j.assignedTechnician && typeof j.assignedTechnician === 'string' && j.assignedTechnician !== 'Unassigned') {
+          return j.assignedTechnician;
+        }
+        return null;
+      };
+
+      const isJobAssignedToMe = (j: any) => {
+        const techList = j.assignedTechnicians || (j.assignedTechnician ? [j.assignedTechnician] : []);
+        const assignedName = getAssignedTechName(j);
+        if (lowerTechName && assignedName && assignedName.toLowerCase().trim() === lowerTechName) {
+          return true;
+        }
+        return techList.some((t: any) => 
+          (techId && t.id === techId) || 
+          (lowerTechName && t.name && t.name.toLowerCase().trim() === lowerTechName)
+        );
+      };
 
       // Map backend Mongoose jobs schema to what the Technician frontend expects
-      const mappedJobs = rawJobs.map((j: any) => ({
-        id: j._id,
-        jobCode: j.jobCode,
-        title: j.title,
-        category: j.category,
-        status: j.status,
-        priority: j.priority,
-        scheduledDate: j.scheduledDate,
-        startDate: j.startDate,
-        targetCompletionDate: j.targetCompletionDate,
-        estimatedDays: j.estimatedDays || 1,
-        scheduledTimeSlot: j.scheduledTimeSlot || '09:00 AM - 12:00 PM',
-        estimatedDuration: j.estimatedDuration || '3 hrs',
-        assignedTechnician: j.assignedTechnician,
-        customer: j.customer || {
-          name: 'N/A',
-          phone: 'N/A',
-          email: 'N/A',
-          address: 'N/A',
-          city: 'N/A',
-          postalCode: 'N/A'
-        },
-        installation: j.installation || {
-          equipmentType: 'General Hardware',
-          modelNumber: 'N/A',
-          serialNumber: 'N/A',
-          locationDetails: 'N/A',
-          specialInstructions: ''
-        },
-        scopeOfWork: j.scopeOfWork || [],
-        equipmentList: j.equipmentList || [],
-        notes: j.notes || [],
-        fieldNotes: j.fieldNotes || '',
-        beforePhotos: j.beforePhotos || [],
-        afterPhotos: j.afterPhotos || [],
-        dailyReports: j.dailyReports || [],
-        activities: j.activities || [],
-        createdAt: j.createdAt || new Date().toISOString(),
-        updatedAt: j.updatedAt || new Date().toISOString()
-      }));
+      const mappedJobs = rawJobs.map((j: any) => {
+        const assignedToMe = isJobAssignedToMe(j);
+        const assignedTechName = getAssignedTechName(j);
+        const isCompletedOrCancelled = j.status === 'COMPLETED' || j.status === 'CANCELLED';
+        const unassigned = !assignedTechName && !isCompletedOrCancelled;
+
+        return {
+          id: j._id || j.id,
+          jobCode: j.jobCode,
+          title: j.title,
+          category: j.category,
+          status: j.status,
+          priority: j.priority,
+          isAssignedToMe: assignedToMe,
+          isAvailableToAccept: unassigned,
+          assignedTechnicianName: assignedTechName,
+          scheduledDate: j.scheduledDate,
+          startDate: j.startDate,
+          targetCompletionDate: j.targetCompletionDate,
+          estimatedDays: j.estimatedDays || 1,
+          scheduledTimeSlot: j.scheduledTimeSlot || '09:00 AM - 12:00 PM',
+          estimatedDuration: j.estimatedDuration || '3 hrs',
+          assignedTechnician: assignedTechName
+            ? { name: assignedTechName, id: techId || '' }
+            : { name: 'Unassigned (Available)', id: '' },
+          customer: j.customer || {
+            name: 'N/A',
+            phone: 'N/A',
+            email: 'N/A',
+            address: 'N/A',
+            city: 'N/A',
+            postalCode: 'N/A'
+          },
+          installation: j.installation || {
+            equipmentType: 'General Hardware',
+            modelNumber: 'N/A',
+            serialNumber: 'N/A',
+            locationDetails: 'N/A',
+            specialInstructions: ''
+          },
+          scopeOfWork: j.scopeOfWork || [],
+          equipmentList: j.equipmentList || [],
+          notes: j.notes || [],
+          fieldNotes: j.fieldNotes || '',
+          beforePhotos: j.beforePhotos || [],
+          afterPhotos: j.afterPhotos || [],
+          dailyReports: j.dailyReports || [],
+          activities: j.activities || [],
+          createdAt: j.createdAt || new Date().toISOString(),
+          updatedAt: j.updatedAt || new Date().toISOString()
+        };
+      });
 
       // Filter priority manually if needed since backend currently doesn't query filter it
       let filtered = mappedJobs;
@@ -352,12 +390,15 @@ export const JobsApiService = {
         filtered = filtered.filter((j: any) => j.priority === options.priority);
       }
 
+      const myJobs = mappedJobs.filter((j: any) => j.isAssignedToMe);
+
       const stats = {
-        totalAssigned: mappedJobs.length,
-        pendingCount: mappedJobs.filter((j: any) => j.status === 'PENDING').length,
-        inProgressCount: mappedJobs.filter((j: any) => j.status === 'IN_PROGRESS' || j.status === 'ACCEPTED').length,
-        completedCount: mappedJobs.filter((j: any) => j.status === 'COMPLETED').length,
-        onHoldCount: mappedJobs.filter((j: any) => j.status === 'ON_HOLD').length,
+        totalAssigned: myJobs.length,
+        totalAvailable: mappedJobs.filter((j: any) => j.isAvailableToAccept).length,
+        pendingCount: myJobs.filter((j: any) => j.status === 'PENDING').length,
+        inProgressCount: myJobs.filter((j: any) => j.status === 'IN_PROGRESS' || j.status === 'ACCEPTED').length,
+        completedCount: myJobs.filter((j: any) => j.status === 'COMPLETED').length,
+        onHoldCount: myJobs.filter((j: any) => j.status === 'ON_HOLD').length,
       };
 
       const startIndex = (options.page - 1) * options.limit;
@@ -379,11 +420,41 @@ export const JobsApiService = {
   },
 
   async getNotifications(): Promise<NotificationItem[]> {
-    return [];
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard`);
+      const resData = await res.json();
+      if (resData.success && resData.data && resData.data.notifications) {
+        return resData.data.notifications.map((n: any) => ({
+          ...n,
+          timestamp: new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        })).reverse();
+      }
+      return [];
+    } catch (err) {
+      console.error('Error fetching notifications:', err);
+      return [];
+    }
   },
 
   async markNotificationRead(id: string): Promise<NotificationItem[]> {
+    // Ideally this would hit a backend endpoint to mark it read, but for now we'll just return the updated list locally in the frontend state.
     return [];
+  },
+
+  async acceptJob(jobId: string, technicianProfile: TechnicianProfile): Promise<Job> {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}/accept`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ technician: technicianProfile })
+      });
+      const resData = await res.json();
+      if (!resData.success) throw new Error(resData.message);
+      return this.mapJob(resData.data);
+    } catch (err) {
+      console.error('Error accepting job:', err);
+      throw err;
+    }
   },
 
   async getTechnicianProfile(): Promise<TechnicianProfile> {
@@ -415,20 +486,23 @@ export const JobsApiService = {
   },
 
   mapJob(j: any): Job {
+    if (!j) {
+      throw new Error('Server returned an empty or invalid job response.');
+    }
     return {
       id: j._id || j.id,
-      jobCode: j.jobCode,
-      title: j.title,
-      category: j.category,
-      status: j.status,
-      priority: j.priority,
-      scheduledDate: j.scheduledDate,
+      jobCode: j.jobCode || j._id || 'SK-JOB-0000',
+      title: j.title || 'CCTV Service Request',
+      category: j.category || 'General Service',
+      status: j.status || 'PENDING',
+      priority: j.priority || 'MEDIUM',
+      scheduledDate: j.scheduledDate || new Date().toISOString().split('T')[0],
       startDate: j.startDate,
       targetCompletionDate: j.targetCompletionDate,
       estimatedDays: j.estimatedDays || 1,
       scheduledTimeSlot: j.scheduledTimeSlot || '09:00 AM - 12:00 PM',
       estimatedDuration: j.estimatedDuration || '3 hrs',
-      assignedTechnician: j.assignedTechnician,
+      assignedTechnician: (j.assignedTechnicians && j.assignedTechnicians.length > 0) ? j.assignedTechnicians[0] : j.assignedTechnician,
       customer: j.customer || {
         name: 'N/A',
         phone: 'N/A',
@@ -457,14 +531,17 @@ export const JobsApiService = {
     };
   },
 
-  async updateJobStatus(jobId: string, status: JobStatus): Promise<Job> {
+  async updateJobStatus(jobId: string, status: JobStatus, note?: string): Promise<Job> {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status, note })
       });
       const resData = await res.json();
+      if (!resData.success || !resData.data) {
+        throw new Error(resData.message || `Failed to update job ${jobId}`);
+      }
       return this.mapJob(resData.data);
     } catch (err) {
       console.error('Error updating job status:', err);
@@ -488,6 +565,9 @@ export const JobsApiService = {
         })
       });
       const resData = await res.json();
+      if (!resData.success || !resData.data) {
+        throw new Error(resData.message || `Failed to upload photo for job ${jobId}`);
+      }
       return this.mapJob(resData.data);
     } catch (err) {
       console.error('Error uploading photo:', err);

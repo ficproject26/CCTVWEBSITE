@@ -18,19 +18,27 @@ interface LoginScreenProps {
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const demoAccounts = [
     {
+      name: 'moorthy',
+      email: 'moorthy@sktechnology.in',
+      badge: 'SK-TECH-MOORTHY',
+      role: 'Senior CCTV Field Engineer',
+      avatar: 'M',
+      password: 'demoPass123!',
+    },
+    {
+      name: 'selvam',
+      email: 'selvam@sktechnology.in',
+      badge: 'SK-TECH-SELVAM',
+      role: 'IP Camera & Network Specialist',
+      avatar: 'S',
+      password: 'demoPass123!',
+    },
+    {
       name: 'Alex Vance',
       email: 'alex.vance@sktechnology.com',
       badge: 'SK-TECH-9042',
       role: 'Senior HVAC & Power Engineer',
       avatar: 'AV',
-      password: 'demoPass123!',
-    },
-    {
-      name: 'Sarah Connor',
-      email: 'sarah.connor@sktechnology.com',
-      badge: 'SK-TECH-4108',
-      role: 'Telecom & Fiber Specialist',
-      avatar: 'SC',
       password: 'demoPass123!',
     },
   ];
@@ -49,12 +57,21 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const userName = selectedDemo.name;
+    const userEmail = selectedDemo.email;
+    const userId = selectedDemo.badge;
+
+    localStorage.setItem('user_name', userName);
+    localStorage.setItem('user_email', userEmail);
+    localStorage.setItem('user_id', userId);
+
     setTimeout(() => {
       setIsSubmitting(false);
       onLoginSuccess({
-        name: selectedDemo.name,
-        email: selectedDemo.email,
-        badge: selectedDemo.badge,
+        name: userName,
+        email: userEmail,
+        badge: userId,
         role: selectedDemo.role,
       });
     }, 500);

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { io } from 'socket.io-client';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
@@ -10,7 +11,7 @@ import {
   FiActivity, FiPackage, FiUsers, FiClock, FiSettings, FiCheckCircle
 } from 'react-icons/fi';
 import { 
-  addOrder, addTechnician, addProduct, approveProject, reworkProject, approveOrder 
+  addOrder, addTechnician, addProduct, approveProject, reworkProject, approveOrder, fetchDashboardData
 } from '../../redux/dashboardSlice';
 import Modal from '../../components/Modal';
 
@@ -26,6 +27,28 @@ export default function Dashboard() {
   const payments = useSelector(state => state.dashboard.payments);
   const notifications = useSelector(state => state.dashboard.notifications);
   const customers = useSelector(state => state.dashboard.customers);
+
+  useEffect(() => {
+    const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
+    socket.emit('join_role', 'admin');
+
+    const handleUpdate = () => {
+      if (typeof fetchDashboardData === 'function') {
+        dispatch(fetchDashboardData());
+      }
+    };
+
+    socket.on('order:created', handleUpdate);
+    socket.on('order:paid', handleUpdate);
+    socket.on('job:status_updated', handleUpdate);
+    socket.on('job:location_updated', (data) => {
+      console.log('📍 Live technician location received:', data);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [dispatch]);
 
   // Calculate dynamic stats
   const totalRevenue = orders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
@@ -223,81 +246,80 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       
-      {/* 4 KPI Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 4 KPI Cards Grid *      {/* 4 KPI Cards Grid (2 on top, 2 on bottom on Mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
         
         {/* Total Revenue */}
-        <div className="bg-blue-100/90 border-blue-200/60 dark:bg-blue-900/30 dark:border-blue-800 p-5 rounded-2xl border shadow-sm flex items-center gap-4 transition-colors">
-          <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-md shadow-blue-600/10 flex-shrink-0">
-            <FiDollarSign size={24} />
+        <div className="bg-blue-100/90 border-blue-200/60 dark:bg-blue-900/30 dark:border-blue-800 p-3.5 sm:p-5 rounded-2xl border shadow-2xs flex items-center gap-2.5 sm:gap-4 transition-colors">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-md shadow-blue-600/10 shrink-0">
+            <FiDollarSign className="w-4 h-4 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Revenue</p>
-            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-50 mt-1">₹{totalRevenue.toLocaleString('en-IN')}</h3>
-            <span className={`text-xs font-semibold flex items-start gap-1 mt-1.5 ${revenueChangePercent >= 0 ? 'text-emerald-600' : 'text-rose-600 dark:text-rose-400'}`}>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Total Revenue</p>
+            <h3 className="text-sm sm:text-lg font-bold text-slate-850 dark:text-slate-50 mt-0.5 truncate">₹{totalRevenue.toLocaleString('en-IN')}</h3>
+            <span className={`text-[9px] sm:text-xs font-semibold flex items-center gap-0.5 mt-1 ${revenueChangePercent >= 0 ? 'text-emerald-600' : 'text-rose-600 dark:text-rose-400'}`}>
               {revenueChangePercent >= 0 ? (
-                <FiArrowUpRight className="flex-shrink-0 mt-0.5" />
+                <FiArrowUpRight className="shrink-0" />
               ) : (
-                <FiArrowDownRight className="flex-shrink-0 mt-0.5" />
+                <FiArrowDownRight className="shrink-0" />
               )}
-              <span>
-                {Math.abs(revenueChangePercent).toFixed(1)}% <span className="text-slate-450 dark:text-slate-400 font-medium">from last month</span>
+              <span className="truncate">
+                {Math.abs(revenueChangePercent).toFixed(1)}% <span className="hidden sm:inline text-slate-450 dark:text-slate-400 font-medium">from last month</span>
               </span>
             </span>
           </div>
         </div>
 
         {/* Today Orders */}
-        <div className="bg-emerald-100/90 border-emerald-200/60 dark:bg-emerald-900/30 dark:border-emerald-800 p-5 rounded-2xl border shadow-sm flex items-center gap-4 transition-colors">
-          <div className="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white shadow-md shadow-emerald-600/10 flex-shrink-0">
-            <FiShoppingCart size={24} />
+        <div className="bg-emerald-100/90 border-emerald-200/60 dark:bg-emerald-900/30 dark:border-emerald-800 p-3.5 sm:p-5 rounded-2xl border shadow-2xs flex items-center gap-2.5 sm:gap-4 transition-colors">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white shadow-md shadow-emerald-600/10 shrink-0">
+            <FiShoppingCart className="w-4 h-4 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Today Orders</p>
-            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-50 mt-1">{todayOrders}</h3>
-            <span className="text-xs text-emerald-600 font-semibold flex items-start gap-1 mt-1.5">
-              <FiArrowUpRight className="flex-shrink-0 mt-0.5" />
-              <span>
-                +{lastHourOrders} new <span className="text-slate-450 dark:text-slate-400 font-medium">in last hour</span>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Today Orders</p>
+            <h3 className="text-sm sm:text-lg font-bold text-slate-850 dark:text-slate-50 mt-0.5 truncate">{todayOrders}</h3>
+            <span className="text-[9px] sm:text-xs text-emerald-600 font-semibold flex items-center gap-0.5 mt-1">
+              <FiArrowUpRight className="shrink-0" />
+              <span className="truncate">
+                +{lastHourOrders} new <span className="hidden sm:inline text-slate-450 dark:text-slate-400 font-medium">in last hour</span>
               </span>
             </span>
           </div>
         </div>
 
         {/* Active Orders */}
-        <div className="bg-amber-100/95 border-amber-200/60 dark:bg-amber-900/30 dark:border-amber-800 p-5 rounded-2xl border shadow-sm flex items-center gap-4 transition-colors">
-          <div className="w-14 h-14 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-md shadow-amber-500/10 flex-shrink-0">
-            <FiClock size={24} />
+        <div className="bg-amber-100/95 border-amber-200/60 dark:bg-amber-900/30 dark:border-amber-800 p-3.5 sm:p-5 rounded-2xl border shadow-2xs flex items-center gap-2.5 sm:gap-4 transition-colors">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-md shadow-amber-500/10 shrink-0">
+            <FiClock className="w-4 h-4 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Orders</p>
-            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-50 mt-1">{activeOrders}</h3>
-            <span className="text-xs text-emerald-600 font-semibold flex items-start gap-1 mt-1.5">
-              <FiActivity className="flex-shrink-0 mt-0.5" />
-              <span>
-                Running <span className="text-slate-450 dark:text-slate-400 font-medium">installations</span>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Active Orders</p>
+            <h3 className="text-sm sm:text-lg font-bold text-slate-850 dark:text-slate-50 mt-0.5 truncate">{activeOrders}</h3>
+            <span className="text-[9px] sm:text-xs text-emerald-600 font-semibold flex items-center gap-0.5 mt-1">
+              <FiActivity className="shrink-0" />
+              <span className="truncate">
+                Running <span className="hidden sm:inline text-slate-450 dark:text-slate-400 font-medium">installations</span>
               </span>
             </span>
           </div>
         </div>
 
         {/* Finished Orders */}
-        <div className="bg-purple-100/90 border-purple-200/60 dark:bg-purple-900/30 dark:border-purple-800 p-5 rounded-2xl border shadow-sm flex items-center gap-4 transition-colors">
-          <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md shadow-purple-600/10 flex-shrink-0">
-            <FiCheckCircle size={24} />
+        <div className="bg-purple-100/90 border-purple-200/60 dark:bg-purple-900/30 dark:border-purple-800 p-3.5 sm:p-5 rounded-2xl border shadow-2xs flex items-center gap-2.5 sm:gap-4 transition-colors">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md shadow-purple-600/10 shrink-0">
+            <FiCheckCircle className="w-4 h-4 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Finished Orders</p>
-            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-50 mt-1">{finishedOrders}</h3>
-            <span className="text-xs text-emerald-600 font-semibold flex items-start gap-1 mt-1.5">
-              <FiCheck className="flex-shrink-0 mt-0.5" />
-              <span>
-                {completionRate}% <span className="text-slate-450 dark:text-slate-400 font-medium">completion rate</span>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Finished Orders</p>
+            <h3 className="text-sm sm:text-lg font-bold text-slate-850 dark:text-slate-50 mt-0.5 truncate">{finishedOrders}</h3>
+            <span className="text-[9px] sm:text-xs text-emerald-600 font-semibold flex items-center gap-0.5 mt-1">
+              <FiCheck className="shrink-0" />
+              <span className="truncate">
+                {completionRate}% <span className="hidden sm:inline text-slate-450 dark:text-slate-400 font-medium">completion rate</span>
               </span>
             </span>
           </div>
         </div>
-
       </div>
 
       {/* Row 1: Recent Orders & Revenue Overview (Line Chart) */}
@@ -420,16 +442,14 @@ export default function Dashboard() {
           
           <div className="space-y-3">
             {recentActivities.map((act, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-7 h-7 rounded-lg ${act.iconBg} text-white flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                    <act.icon size={13} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-slate-700 dark:text-slate-200">{act.title}</p>
-                  </div>
+              <div key={index} className="flex items-start gap-3 py-2 border-b border-slate-100/60 dark:border-slate-800/60 last:border-0">
+                <div className={`w-7 h-7 rounded-lg ${act.iconBg} text-white flex items-center justify-center shrink-0 shadow-2xs mt-0.5`}>
+                  <act.icon size={13} />
                 </div>
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{act.time}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-slate-800 dark:text-slate-200 leading-relaxed">{act.title}</p>
+                  <span className="text-[10px] text-slate-400 font-mono font-semibold block mt-0.5">{act.time}</span>
+                </div>
               </div>
             ))}
           </div>

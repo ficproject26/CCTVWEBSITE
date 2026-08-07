@@ -386,6 +386,37 @@ export default function Projects() {
                   </span>
                 </div>
               </div>
+
+              {/* Live GPS Location Badge & Navigation Link */}
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <div>
+                    <span className="font-bold text-xs">Live GPS Tracking Active</span>
+                    <p className="text-[10px] text-emerald-700 dark:text-emerald-400">
+                      {selectedProject.currentLocation 
+                        ? `Lat: ${selectedProject.currentLocation.lat.toFixed(4)}, Lng: ${selectedProject.currentLocation.lng.toFixed(4)}`
+                        : `Site: ${selectedProject.location || 'Chennai, IN'}`}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(
+                    selectedProject.currentLocation
+                      ? `${selectedProject.currentLocation.lat},${selectedProject.currentLocation.lng}`
+                      : `${selectedProject.location || 'Chennai, India'}`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <FiMapPin className="w-3 h-3" />
+                  <span>Open Live Map</span>
+                </a>
+              </div>
             </div>
 
             {/* Daily Reports & Photos Timeline */}

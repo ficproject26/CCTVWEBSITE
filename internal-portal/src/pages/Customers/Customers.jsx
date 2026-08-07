@@ -141,34 +141,83 @@ export default function Customers() {
                   className={`bg-white dark:bg-slate-900 rounded-2xl border-y border-r border-t-slate-100 border-b-slate-100 border-r-slate-100 dark:border-t-slate-800 dark:border-b-slate-800 dark:border-r-slate-800 shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition-all group ${theme.border}`}
                 >
                   <div>
-                    <div className="flex items-start justify-between">
-                      <div className="text-left">
-                        <h4 className="ty-card-title truncate max-w-[130px]" title={cust.name}>{cust.name}</h4>
-                        <span className="inline-flex items-center gap-1 ty-card-subtitle mt-1">
-                          <FiMapPin size={10} /> {cust.location}
-                        </span>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="text-left min-w-0 flex-1">
+                        <h4 className="ty-card-title truncate text-sm font-extrabold" title={cust.name}>{cust.name}</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed flex items-start gap-1">
+                          <FiMapPin size={12} className="shrink-0 mt-0.5 text-red-500" />
+                          <span>{cust.location || 'Anna Nagar, Chennai'}</span>
+                        </p>
                       </div>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs uppercase flex-shrink-0 ${theme.badge}`}>
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs uppercase shrink-0 shadow-2xs ${theme.badge}`}>
                         {cust.name.slice(0, 2)}
                       </div>
                     </div>
 
-                    <div className="mt-4 space-y-2 border-t border-b border-slate-50 dark:border-slate-800 py-3 text-left">
-                      <div className="flex items-center gap-2 ty-table-cell">
-                        <FiMail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                    <div className="mt-3 space-y-1 border-t border-b border-slate-100 dark:border-slate-800/80 py-2 text-left">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2 truncate">
+                        <FiMail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span className="truncate">{cust.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 ty-table-cell">
-                        <FiPhone className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                        <FiPhone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span>{cust.phone}</span>
-                      </div>
+                      </p>
                     </div>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between border-t border-slate-50 dark:border-slate-800 pt-3">
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-2.5">
                     <div className="text-left">
-                      <span className="ty-label block">CCTV Requests</span>
-                      <span className="ty-table-cell-strong">{cust.installationsCount || 0} orders</span>
+                      <span className="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">CCTV Orders</span>
+                      <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">{cust.installationsCount || 0} Orders</span>
+                    </div>
+
+                    <div className="text-right flex items-center gap-2">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">Total Billing</span>
+                        <span className={`text-xs sm:text-sm font-black font-mono ${theme.billing}`}>₹{(cust.totalSpent || 0).toLocaleString('en-IN')}</span>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setEditingCustomer(cust);
+                          setCustomerForm({
+                            name: cust.name,
+                            email: cust.email,
+                            phone: cust.phone,
+                            location: cust.location
+                          });
+                          setEditModalOpen(true);
+                        }}
+                        className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 text-xs font-bold rounded-lg transition-colors border border-blue-200 dark:border-blue-800/50 shrink-0 cursor-pointer ml-1"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              );
+            })
+          )}
+        </div>
+      ) : (
+        /* Customers Tabular List View (with Mobile Card Support) */
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-4 md:p-0 overflow-hidden transition-colors">
+          
+          {/* 📱 Mobile Customer List Cards (block md:hidden) */}
+          <div className="block md:hidden space-y-3">
+            {filteredCustomers.length === 0 ? (
+              <div className="py-8 text-center text-slate-400 text-xs">
+                No customers match your search parameters.
+              </div>
+            ) : (
+              filteredCustomers.map((cust, idx) => (
+                <div key={`mob-cust-${cust.id || idx}`} className="bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-900 dark:text-white">{cust.name}</h4>
+                      <p className="text-[11px] text-slate-500 truncate">📍 {cust.location}</p>
                     </div>
                     <button
                       onClick={() => {
@@ -181,25 +230,26 @@ export default function Customers() {
                         });
                         setEditModalOpen(true);
                       }}
-                      className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-[10px] font-bold rounded-lg transition-colors border border-blue-100 dark:border-blue-900/30"
+                      className="px-2.5 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/30 text-[10px] font-bold rounded-lg border border-blue-200"
                     >
                       Edit
                     </button>
-                    <div className="text-right">
-                      <span className="ty-label block">Total Billing</span>
-                      <span className={`text-sm font-semibold ${theme.billing}`}>₹{(cust.totalSpent || 0).toLocaleString('en-IN')}</span>
-                    </div>
                   </div>
 
+                  <div className="text-[11px] text-slate-600 dark:text-slate-300 space-y-0.5 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <p className="truncate">📞 {cust.phone} • ✉️ {cust.email}</p>
+                    <div className="flex items-center justify-between font-mono font-bold pt-1">
+                      <span className="text-slate-500">{cust.installationsCount || 0} Orders</span>
+                      <span className="text-emerald-600">₹{(cust.totalSpent || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
                 </div>
-              );
-            })
-          )}
-        </div>
-      ) : (
-        /* Customers Tabular List View */
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
-          <div className="overflow-x-auto min-w-full">
+              ))
+            )}
+          </div>
+
+          {/* 💻 Desktop Table View (hidden md:block) */}
+          <div className="hidden md:block overflow-x-auto min-w-full">
             {filteredCustomers.length === 0 ? (
               <div className="py-12 text-center text-slate-450 text-xs font-medium">
                 <FiInfo size={36} className="mx-auto mb-2 opacity-50" />

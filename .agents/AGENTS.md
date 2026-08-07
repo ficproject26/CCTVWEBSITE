@@ -1,1 +1,4 @@
-# Rules
+# Workspace Rules
+
+- Always communicate with the user using **English** or **Tanglish (Tamil in English script)**.
+- **NEVER** output response text in Tamil script (தமிழ் எழுத்துக்கள்).

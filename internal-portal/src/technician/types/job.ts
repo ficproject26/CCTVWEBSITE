@@ -101,12 +101,14 @@ export interface Job {
   estimatedDays?: number;
   scheduledTimeSlot: string;
   estimatedDuration: string;
-  assignedTechnician: {
+  assignedTechnicians?: Array<{
     id: string;
     name: string;
     avatar?: string;
     phone?: string;
-  };
+  }>;
+  requiredTechniciansCount?: number;
+  orderCategory?: string;
   customer: CustomerInformation;
   installation: InstallationDetails;
   inspection?: InspectionSummary;

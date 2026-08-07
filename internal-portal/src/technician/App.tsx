@@ -1,4 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { 
+  LayoutDashboard, 
+  Briefcase, 
+  FileText, 
+  Bell, 
+  User 
+} from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { AssignedJobsModule } from './components/AssignedJobs/AssignedJobsModule';
@@ -33,7 +40,9 @@ export function App() {
   const [autoSyncEnabled, setAutoSyncEnabled] = useState<boolean>(true);
   const [queuedReportsCount, setQueuedReportsCount] = useState<number>(3);
   const [isAutoSyncing, setIsAutoSyncing] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return Boolean(localStorage.getItem('internal_token') || localStorage.getItem('sk_tech_token'));
+  });
   const [activeTab, setActiveTab] = useState<string>(() => {
     return localStorage.getItem('sk_tech_tab') || 'dashboard';
   });
@@ -127,27 +136,39 @@ export function App() {
   }, []);
 
   // Authentication login handler
-  const handleLoginSuccess = (technicianData: { name: string; email: string; badge: string; role: string }) => {
+  const handleLoginSuccess = async (technicianData: { name: string; email: string; badge: string; role: string }) => {
     localStorage.setItem('sk_tech_auth', 'true');
+    localStorage.setItem('user_name', technicianData.name);
+    localStorage.setItem('user_email', technicianData.email);
+    localStorage.setItem('user_id', technicianData.badge);
     setIsAuthenticated(true);
+
     setProfile({
-      id: 'TECH-9042',
+      id: technicianData.badge,
       name: technicianData.name,
       badgeNumber: technicianData.badge,
       role: technicianData.role,
       email: technicianData.email,
-      phone: '+1 (512) 890-4421',
+      phone: '+91 98765 43210',
       status: 'ON_DUTY',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
       certifications: [
-        'Certified Field Tech Level 4',
-        'LOTO Safety Certified'
+        'Certified CCTV Field Specialist',
+        'IP Camera Network Certified'
       ],
-      vehicleNumber: 'Ford Transit #SK-408',
+      vehicleNumber: 'SK Service Van #SK-102',
       rating: 4.9,
       completedJobsCount: 142,
     });
     setActiveTab('dashboard');
+
+    // Reload jobs specifically for this newly logged-in technician
+    try {
+      const jobsResponse = await JobsApiService.getAssignedJobs({ searchQuery: '', status: 'ALL', priority: 'ALL', sortBy: 'scheduledDate', sortOrder: 'asc', page: 1, limit: 10 });
+      setJobs(jobsResponse.data);
+    } catch (e) {
+      console.error('Error loading jobs on login:', e);
+    }
   };
 
   const handleLogout = () => {
@@ -172,7 +193,20 @@ export function App() {
 
   const handleUpdateStatus = async (jobId: string, status: JobStatus) => {
     try {
-      const updated = await JobsApiService.updateJobStatus(jobId, status);
+      const jobToUpdate = jobs.find(j => j.id === jobId);
+      let updated;
+      
+      if (status === 'ACCEPTED' && (!jobToUpdate?.assignedTechnician || !jobToUpdate.assignedTechnician.id)) {
+        if (profile) {
+          updated = await JobsApiService.acceptJob(jobId, profile);
+        } else {
+          const fetchedProfile = await JobsApiService.getTechnicianProfile();
+          updated = await JobsApiService.acceptJob(jobId, fetchedProfile);
+        }
+      } else {
+        updated = await JobsApiService.updateJobStatus(jobId, status);
+      }
+      
       setJobs((prev) => prev.map((j) => (j.id === jobId ? updated : j)));
       if (selectedJob?.id === jobId) setSelectedJob(updated);
       if (workflowJob?.id === jobId) setWorkflowJob(updated);
@@ -325,53 +359,37 @@ export function App() {
           isAutoSyncing={isAutoSyncing}
         />
 
-        {activeTab === 'dashboard' && (
-          <Header
-            searchQuery={globalSearchQuery}
-            onSearchChange={setGlobalSearchQuery}
-            currentTechnician={profile}
-            onToggleSidebar={() => setIsMobileSidebarOpen(true)}
-            notifications={notifications}
-            onMarkRead={handleMarkNotificationRead}
-            onNavigateToNotifications={() => setActiveTab('notifications')}
-          />
-        )}
+        <Header
+          searchQuery={globalSearchQuery}
+          onSearchChange={setGlobalSearchQuery}
+          currentTechnician={profile}
+          onToggleSidebar={() => setIsMobileSidebarOpen(true)}
+          notifications={notifications}
+          onMarkRead={handleMarkNotificationRead}
+          onNavigateToNotifications={() => setActiveTab('notifications')}
+        />
 
-        <main className="flex-1 px-6 py-8 lg:px-8 lg:py-10 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-10 pb-24 lg:pb-10 max-w-7xl w-full mx-auto space-y-6">
           {/* Module Title Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-5">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-zinc-900 capitalize">
-                {activeTab === 'dashboard' && 'Technician Operational Overview'}
-                {activeTab === 'assigned_jobs' && 'Assigned Field Jobs'}
-                {activeTab === 'todays_jobs' && "Today's Field Schedule"}
-                {activeTab === 'reports' && 'Daily Service & Progress Reports'}
+                {activeTab === 'dashboard' && 'Dashboard Overview'}
+                {activeTab === 'assigned_jobs' && 'Assigned Jobs'}
+                {activeTab === 'todays_jobs' && "Today's Schedule"}
+                {activeTab === 'reports' && 'Daily Reports'}
                 {activeTab === 'history' && 'Job History'}
-                {activeTab === 'query' && 'Field Support & Dispatch Query Helpdesk'}
-                {activeTab === 'analytics' && 'Personal Performance & Analytics Scorecard'}
-                {activeTab === 'notifications' && 'System Notifications'}
-                {activeTab === 'profile' && 'Technician Profile'}
-                {activeTab === 'settings' && 'Portal Settings & Sync'}
+                {activeTab === 'query' && 'Helpdesk & Support'}
+                {activeTab === 'analytics' && 'Performance Analytics'}
+                {activeTab === 'notifications' && 'Notifications'}
+                {activeTab === 'profile' && 'Profile'}
+                {activeTab === 'settings' && 'Settings'}
               </h1>
               <p className="text-xs text-zinc-500 mt-1">
-                SK Technology Enterprise Field Service Management System.
+                Field service daily activity logs and customer work reports.
               </p>
             </div>
 
-            <div className="flex items-center space-x-3">
-              {/* 📶 Offline Field Sync Mode Status Pill */}
-              <button
-                onClick={() => setIsOnline(!isOnline)}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-bold flex items-center space-x-2 transition-all cursor-pointer shadow-2xs ${isOnline
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                    : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100 animate-pulse'
-                  }`}
-                title="Click to toggle Field Network Connection (Simulate Offline Work in Basements)"
-              >
-                <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500 animate-ping'}`} />
-                <span>{isOnline ? 'NETWORK: ONLINE & SYNCED' : 'OFFLINE MODE (LOCAL QUEUE ACTIVE)'}</span>
-              </button>
-            </div>
           </div>
 
           {/* Module Views Routing */}
@@ -449,6 +467,67 @@ export function App() {
             />
           )}
         </main>
+      </div>
+
+      {/* 📱 Mobile Bottom Navigation Bar (Mobile View Only) */}
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-zinc-200/90 px-2 py-1.5 flex items-center justify-around text-center lg:hidden shadow-lg">
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'dashboard' ? 'text-zinc-900 font-extrabold scale-105' : 'text-zinc-400 font-medium'
+          }`}
+        >
+          <LayoutDashboard className={`w-5 h-5 ${activeTab === 'dashboard' ? 'text-zinc-900' : 'text-zinc-400'}`} />
+          <span className="text-[10px] mt-0.5">Overview</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('assigned_jobs')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer relative ${
+            activeTab === 'assigned_jobs' ? 'text-zinc-900 font-extrabold scale-105' : 'text-zinc-400 font-medium'
+          }`}
+        >
+          <Briefcase className={`w-5 h-5 ${activeTab === 'assigned_jobs' ? 'text-zinc-900' : 'text-zinc-400'}`} />
+          <span className="text-[10px] mt-0.5">Jobs</span>
+          {jobs.length > 0 && (
+            <span className="absolute top-0.5 right-2 w-2 h-2 rounded-full bg-emerald-500" />
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('reports')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'reports' ? 'text-zinc-900 font-extrabold scale-105' : 'text-zinc-400 font-medium'
+          }`}
+        >
+          <FileText className={`w-5 h-5 ${activeTab === 'reports' ? 'text-zinc-900' : 'text-zinc-400'}`} />
+          <span className="text-[10px] mt-0.5">Reports</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('notifications')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer relative ${
+            activeTab === 'notifications' ? 'text-zinc-900 font-extrabold scale-105' : 'text-zinc-400 font-medium'
+          }`}
+        >
+          <Bell className={`w-5 h-5 ${activeTab === 'notifications' ? 'text-zinc-900' : 'text-zinc-400'}`} />
+          <span className="text-[10px] mt-0.5">Alerts</span>
+          {notifications.filter(n => !n.read).length > 0 && (
+            <span className="absolute top-0.5 right-2.5 min-w-[14px] h-[14px] px-1 bg-red-500 text-white text-[9px] font-mono font-bold rounded-full flex items-center justify-center">
+              {notifications.filter(n => !n.read).length}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'profile' ? 'text-zinc-900 font-extrabold scale-105' : 'text-zinc-400 font-medium'
+          }`}
+        >
+          <User className={`w-5 h-5 ${activeTab === 'profile' ? 'text-zinc-900' : 'text-zinc-400'}`} />
+          <span className="text-[10px] mt-0.5">Profile</span>
+        </button>
       </div>
 
       {/* Unified App-Wide Error Banner */}

@@ -26,7 +26,8 @@ export default function Cart() {
     address: "", // Street Address
     state: "",
     zipcode: "",
-    serviceType: "ONLY_PRODUCT_DELIVERY"
+    serviceType: "ONLY_PRODUCT_DELIVERY",
+    paymentMethod: "RAZORPAY" // "RAZORPAY" | "COD"
   });
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -145,7 +146,8 @@ export default function Cart() {
       address: "",
       state: "",
       zipcode: "",
-      serviceType: "ONLY_PRODUCT_DELIVERY"
+      serviceType: "ONLY_PRODUCT_DELIVERY",
+      paymentMethod: "RAZORPAY"
     });
     setCheckoutError("");
     setCheckoutOpen(true);
@@ -160,6 +162,19 @@ export default function Cart() {
         }
       })
       .catch(err => console.warn("Could not load address on checkout open:", err));
+  };
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) {
+        return resolve(true);
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
   };
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
@@ -183,6 +198,7 @@ export default function Cart() {
     const fullAddress = `${checkoutForm.address}, ${checkoutForm.state} - ${checkoutForm.zipcode} [Service: ${checkoutForm.serviceType === 'DELIVERY_INSTALLATION' ? 'DELIVERY + INSTALLATION' : 'ONLY PRODUCT DELIVERY'}]`;
 
     try {
+      // 1. Create Order in backend database
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -192,18 +208,93 @@ export default function Cart() {
           customerPhone: checkoutForm.phone,
           shippingAddress: fullAddress,
           items: orderItems,
-          totalAmount: total
+          totalAmount: total,
+          serviceType: checkoutForm.serviceType,
+          paymentMethod: checkoutForm.paymentMethod,
         })
       });
 
       const data = await res.json();
-      if (data.success && data.data) {
-        setOrderSuccess(data.data);
-        localStorage.removeItem("shopping_cart");
-        window.dispatchEvent(new Event("cart-updated"));
-      } else {
+      if (!data.success || !data.data) {
         setCheckoutError(data.message || "Failed to place order.");
+        setPlacingOrder(false);
+        return;
       }
+
+      const createdOrder = data.data;
+
+      // 2. If Razorpay Online Payment selected, launch Razorpay Gateway
+      if (checkoutForm.paymentMethod === "RAZORPAY") {
+        const loaded = await loadRazorpayScript();
+        if (!loaded) {
+          setCheckoutError("Razorpay SDK failed to load. Please check your network.");
+          setPlacingOrder(false);
+          return;
+        }
+
+        const paymentRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/create-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: total,
+            orderId: createdOrder._id,
+            notes: { orderNumber: createdOrder.orderNumber }
+          })
+        });
+        const paymentOrderData = await paymentRes.json();
+
+        if (paymentOrderData.success && paymentOrderData.order) {
+          const options = {
+            key: paymentOrderData.key,
+            amount: paymentOrderData.order.amount,
+            currency: paymentOrderData.order.currency || "INR",
+            name: "SK Technology CCTV Solutions",
+            description: `Payment for Order #${createdOrder.orderNumber}`,
+            order_id: paymentOrderData.order.id,
+            handler: async (response: any) => {
+              // Verify Payment Signature on Backend
+              await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/verify`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  orderId: createdOrder._id,
+                  paymentMethod: "Razorpay Online (UPI/Card)"
+                })
+              });
+
+              createdOrder.paymentStatus = "PAID";
+              setOrderSuccess(createdOrder);
+              localStorage.removeItem("shopping_cart");
+              window.dispatchEvent(new Event("cart-updated"));
+              setPlacingOrder(false);
+            },
+            prefill: {
+              name: checkoutForm.name,
+              email: checkoutForm.email,
+              contact: checkoutForm.phone,
+            },
+            theme: {
+              color: "#ff3b30"
+            }
+          };
+
+          const rzp = new (window as any).Razorpay(options);
+          rzp.on('payment.failed', function (resp: any) {
+            setCheckoutError(`Payment Failed: ${resp.error.description || 'Transaction cancelled'}`);
+            setPlacingOrder(false);
+          });
+          rzp.open();
+          return;
+        }
+      }
+
+      // COD or Fallback Success
+      setOrderSuccess(createdOrder);
+      localStorage.removeItem("shopping_cart");
+      window.dispatchEvent(new Event("cart-updated"));
     } catch (err: any) {
       setCheckoutError(err.message || "An error occurred. Please try again.");
     } finally {
@@ -496,6 +587,42 @@ export default function Cart() {
                       >
                         <h4 className="font-extrabold text-xs text-gray-900 uppercase">Delivery + Installation</h4>
                         <p className="text-[10px] text-gray-500 mt-1">Verified technicians for expert setup.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment Method Selection */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Payment Method</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div
+                        onClick={() => setCheckoutForm(prev => ({ ...prev, paymentMethod: "RAZORPAY" }))}
+                        className={`p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
+                          checkoutForm.paymentMethod === "RAZORPAY"
+                            ? "border-[#ff3b30] bg-red-50/40 dark:bg-red-950/20"
+                            : "border-gray-200/80 hover:border-gray-300 bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-extrabold text-xs text-gray-900 uppercase">Razorpay Online</h4>
+                          <span className="text-[9px] bg-red-100 text-[#ff3b30] font-black px-1.5 py-0.5 rounded">UPI / CARDS</span>
+                        </div>
+                        <p className="text-[10px] text-gray-500 mt-1">Instant digital payment with warranty lock.</p>
+                      </div>
+
+                      <div
+                        onClick={() => setCheckoutForm(prev => ({ ...prev, paymentMethod: "COD" }))}
+                        className={`p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
+                          checkoutForm.paymentMethod === "COD"
+                            ? "border-[#ff3b30] bg-red-50/40 dark:bg-red-950/20"
+                            : "border-gray-200/80 hover:border-gray-300 bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-extrabold text-xs text-gray-900 uppercase">Pay After Service</h4>
+                          <span className="text-[9px] bg-gray-100 text-gray-600 font-black px-1.5 py-0.5 rounded">COD / CASH</span>
+                        </div>
+                        <p className="text-[10px] text-gray-500 mt-1">Pay upon delivery or completed installation.</p>
                       </div>
                     </div>
                   </div>

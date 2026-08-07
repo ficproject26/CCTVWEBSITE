@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export type JobStatus = 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 export type JobPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type JobAcceptanceStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED';
 
 export interface IJob extends Document {
   jobCode: string;
@@ -9,18 +10,32 @@ export interface IJob extends Document {
   category: string;
   status: JobStatus;
   priority: JobPriority;
+  acceptanceStatus?: JobAcceptanceStatus;
+  currentLocation?: {
+    lat: number;
+    lng: number;
+    updatedAt?: string;
+  };
+  proofImages?: Array<{
+    id: string;
+    url: string;
+    caption?: string;
+    uploadedAt?: string;
+  }>;
   scheduledDate: string;
   startDate?: string;
   targetCompletionDate?: string;
   estimatedDays?: number;
   scheduledTimeSlot?: string;
   estimatedDuration?: string;
-  assignedTechnician?: {
+  assignedTechnicians?: Array<{
     id: string;
     name: string;
     avatar?: string;
     phone?: string;
-  };
+  }>;
+  requiredTechniciansCount?: number;
+  orderCategory?: 'Delivery Only' | 'Delivery & Installation';
   customer: {
     name: string;
     phone: string;
@@ -74,7 +89,7 @@ const JobSchema: Schema = new Schema(
     category: { type: String, required: true },
     status: {
       type: String,
-      enum: ['PENDING', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'],
+      enum: ['PENDING', 'ASSIGNED', 'IN_PROGRESS', 'BEFORE_PHOTOS_DONE', 'AFTER_PHOTOS_DONE', 'INSPECTED', 'DAILY_REPORTED', 'COMPLETED', 'CANCELLED'],
       default: 'ASSIGNED',
     },
     priority: {
@@ -82,18 +97,40 @@ const JobSchema: Schema = new Schema(
       enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'],
       default: 'MEDIUM',
     },
+    acceptanceStatus: {
+      type: String,
+      enum: ['PENDING', 'ACCEPTED', 'DECLINED'],
+      default: 'PENDING',
+    },
+    currentLocation: {
+      lat: { type: Number },
+      lng: { type: Number },
+      updatedAt: { type: String },
+    },
+    proofImages: [
+      {
+        id: { type: String },
+        url: { type: String },
+        caption: { type: String },
+        uploadedAt: { type: String },
+      },
+    ],
     scheduledDate: { type: String, required: true },
     startDate: { type: String },
     targetCompletionDate: { type: String },
     estimatedDays: { type: Number, default: 1 },
     scheduledTimeSlot: { type: String },
     estimatedDuration: { type: String },
-    assignedTechnician: {
-      id: { type: String },
-      name: { type: String },
-      avatar: { type: String },
-      phone: { type: String },
-    },
+    assignedTechnicians: [
+      {
+        id: { type: String },
+        name: { type: String },
+        avatar: { type: String },
+        phone: { type: String },
+      },
+    ],
+    requiredTechniciansCount: { type: Number, default: 1 },
+    orderCategory: { type: String, default: 'Delivery & Installation' },
     customer: {
       name: { type: String, required: true },
       phone: { type: String, required: true },

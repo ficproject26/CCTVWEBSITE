@@ -43,21 +43,32 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="h-24 py-4 border-b border-zinc-200 bg-white px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
-      {/* Mobile Menu Hamburger Button */}
-      <div className="flex items-center space-x-4 flex-1 max-w-lg">
+    <header className="py-3 sm:py-4 border-b border-zinc-200 bg-white px-3 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+      {/* Mobile Menu Hamburger Button, Brand Logo & Quick Search */}
+      <div className="flex items-center space-x-2 sm:space-x-4 flex-1 max-w-lg">
         {onToggleSidebar && (
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2.5 rounded-xl text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+            className="lg:hidden p-2 rounded-xl text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 border border-zinc-200/80 transition-colors cursor-pointer shrink-0"
             title="Open Navigation Menu"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5" />
           </button>
         )}
 
+        {/* 📱 Mobile Brand Title & Logo (Mobile View Only) */}
+        <div className="flex items-center space-x-2 lg:hidden shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center text-white font-black text-xs shadow-xs">
+            SK
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="text-xs font-black text-zinc-900 tracking-tight">SK TECHNOLOGY</span>
+            <span className="text-[9px] font-bold text-red-600 tracking-wider mt-0.5">FIELD PORTAL</span>
+          </div>
+        </div>
+
         {/* Quick Search */}
-        <div className="relative w-full">
+        <div className="relative w-full hidden sm:block">
           <Search className="w-4.5 h-4.5 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
@@ -157,14 +168,31 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* User Avatar */}
-        <div className="flex items-center space-x-3 pl-4 border-l border-zinc-200">
-          <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white flex items-center justify-center font-extrabold text-xs shadow-xs border border-zinc-800">
+        {/* User Avatar & Logout Button */}
+        <div className="flex items-center space-x-3 pl-3 sm:pl-4 border-l border-zinc-200">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-zinc-900 text-white flex items-center justify-center font-extrabold text-xs shadow-xs border border-zinc-800">
             {initials}
           </div>
-          <span className="text-sm font-bold text-zinc-900 hidden md:inline pr-1">
-            {currentTechnician?.name || 'Alex Vance'}
-          </span>
+          <div className="hidden md:block text-left">
+            <span className="text-xs font-bold text-zinc-900 block leading-tight">
+              {currentTechnician?.name || 'Technician'}
+            </span>
+            <span className="text-[10px] text-zinc-400 font-mono">Field Staff</span>
+          </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={() => {
+              localStorage.removeItem('internal_token');
+              localStorage.removeItem('internal_role');
+              localStorage.removeItem('sk_tech_token');
+              window.location.href = '/login';
+            }}
+            className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer border border-red-200/80 flex items-center space-x-1"
+            title="Log Out"
+          >
+            <span>Exit</span>
+          </button>
         </div>
       </div>
     </header>

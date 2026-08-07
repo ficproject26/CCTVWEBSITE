@@ -64,7 +64,16 @@ export const AssignedJobsModule: React.FC<AssignedJobsModuleProps> = ({ onOpenWo
 
   const handleUpdateStatus = async (jobId: string, newStatus: JobStatus, note?: string) => {
     try {
-      const updatedJob = await JobsApiService.updateJobStatus(jobId, newStatus, note);
+      const job = response?.data.find(j => j.id === jobId);
+      let updatedJob;
+
+      if (newStatus === 'ACCEPTED' && (!job?.assignedTechnician || !job.assignedTechnician.id)) {
+        const profile = await JobsApiService.getTechnicianProfile();
+        updatedJob = await JobsApiService.acceptJob(jobId, profile);
+      } else {
+        updatedJob = await JobsApiService.updateJobStatus(jobId, newStatus, note);
+      }
+
       fetchJobs();
       if (selectedJob && selectedJob.id === jobId) {
         setSelectedJob(updatedJob);
@@ -98,117 +107,74 @@ export const AssignedJobsModule: React.FC<AssignedJobsModuleProps> = ({ onOpenWo
 
   return (
     <div className="space-y-6">
-      {/* Rich High-Performance Metrics Banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Sleek Professional Metrics Cards - Responsive 2x2 Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* 1. Total Assigned */}
-        <div className="bg-white border border-zinc-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-zinc-300 hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
+        <div className="bg-white border border-zinc-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">TOTAL ASSIGNED</span>
-            <div className="w-9 h-9 rounded-xl bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white transition-colors duration-200 flex items-center justify-center text-zinc-700">
-              <Briefcase className="w-4.5 h-4.5" />
+            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Total Assigned</span>
+            <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
+              <Briefcase className="w-4 h-4" />
             </div>
           </div>
-
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="text-3xl font-black text-zinc-900 tracking-tight">{totalAssigned}</p>
-            <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md font-mono ${
-              totalAssigned > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-zinc-500 bg-zinc-50'
-            }`}>
-              {totalAssigned > 0 ? 'Active' : 'Idle'}
+            <span className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight font-mono">{totalAssigned}</span>
+            <span className="text-[10px] font-bold text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200">
+              Orders
             </span>
           </div>
-
-          <p className="text-[11px] font-semibold text-zinc-500 mt-1.5 flex items-center space-x-1">
-            <span>{totalAssigned} Work Orders</span>
-            <span className="text-zinc-300">•</span>
-            <span className="text-zinc-400 font-normal">Active Dispatch Queue</span>
-          </p>
-
-          <div className="w-full bg-zinc-100 h-1 rounded-full mt-3 overflow-hidden">
-            <div className="bg-zinc-900 h-full rounded-full transition-all duration-500" style={{ width: totalAssigned > 0 ? '100%' : '0%' }} />
-          </div>
+          <p className="text-[11px] text-zinc-500 font-medium mt-1">Assigned work orders</p>
         </div>
 
         {/* 2. In Progress */}
-        <div className="bg-white border border-zinc-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-sky-300/80 hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
+        <div className="bg-white border border-zinc-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">IN PROGRESS</span>
-            <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 group-hover:bg-sky-500 group-hover:text-white transition-colors duration-200 flex items-center justify-center">
-              <Play className="w-4.5 h-4.5 fill-current" />
+            <span className="text-[11px] font-bold text-sky-700 uppercase tracking-wider">In Progress</span>
+            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center group-hover:bg-sky-600 group-hover:text-white transition-colors">
+              <Play className="w-4 h-4 fill-current" />
             </div>
           </div>
-
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="text-3xl font-black text-sky-700 tracking-tight">{inProgressCount}</p>
-            <span className="inline-flex items-center text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md font-mono">
-              ⚡ Live
+            <span className="text-2xl sm:text-3xl font-extrabold text-sky-700 tracking-tight font-mono">{inProgressCount}</span>
+            <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">
+              Active
             </span>
           </div>
-
-          <p className="text-[11px] font-semibold text-sky-600 mt-1.5 flex items-center space-x-1">
-            <span>Active On Site</span>
-            <span className="text-zinc-300">•</span>
-            <span className="text-zinc-400 font-normal">{inProgressCount > 0 ? 'GPS Verified' : 'None'}</span>
-          </p>
-
-          <div className="w-full bg-sky-100 h-1 rounded-full mt-3 overflow-hidden">
-            <div className="bg-sky-500 h-full rounded-full transition-all duration-500" style={{ width: totalAssigned > 0 ? `${(inProgressCount / totalAssigned) * 100}%` : '0%' }} />
-          </div>
+          <p className="text-[11px] text-sky-600 font-medium mt-1">Work in progress on site</p>
         </div>
 
         {/* 3. Pending Start */}
-        <div className="bg-white border border-zinc-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-amber-300/80 hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
+        <div className="bg-white border border-zinc-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">PENDING START</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-200 flex items-center justify-center">
-              <Clock className="w-4.5 h-4.5" />
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Pending Start</span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+              <Clock className="w-4 h-4" />
             </div>
           </div>
-
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="text-3xl font-black text-amber-700 tracking-tight">{pendingCount}</p>
-            <span className="inline-flex items-center text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-mono">
+            <span className="text-2xl sm:text-3xl font-extrabold text-amber-700 tracking-tight font-mono">{pendingCount}</span>
+            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
               Scheduled
             </span>
           </div>
-
-          <p className="text-[11px] font-semibold text-amber-600 mt-1.5 flex items-center space-x-1">
-            <span>{pendingCount} Scheduled</span>
-            <span className="text-zinc-300">•</span>
-            <span className="text-zinc-400 font-normal">Ready</span>
-          </p>
-
-          <div className="w-full bg-amber-100 h-1 rounded-full mt-3 overflow-hidden">
-            <div className="bg-amber-500 h-full rounded-full transition-all duration-500" style={{ width: totalAssigned > 0 ? `${(pendingCount / totalAssigned) * 100}%` : '0%' }} />
-          </div>
+          <p className="text-[11px] text-amber-600 font-medium mt-1">Scheduled & awaiting start</p>
         </div>
 
         {/* 4. Completed */}
-        <div className="bg-white border border-zinc-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-emerald-300/80 hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
+        <div className="bg-white border border-zinc-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">COMPLETED</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200 flex items-center justify-center">
-              <CheckCircle2 className="w-4.5 h-4.5" />
+            <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Completed</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-
           <div className="mt-3 flex items-baseline justify-between">
-            <p className="text-3xl font-black text-emerald-700 tracking-tight">{completedCount}</p>
-            <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-mono">
-              <ArrowUpRight className="w-3 h-3 mr-0.5" />
+            <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight font-mono">{completedCount}</span>
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
               {totalAssigned > 0 ? `${Math.round((completedCount / totalAssigned) * 100)}%` : '0%'}
             </span>
           </div>
-
-          <p className="text-[11px] font-semibold text-emerald-600 mt-1.5 flex items-center space-x-1">
-            <span>{completedCount} Completed</span>
-            <span className="text-zinc-300">•</span>
-            <span className="text-zinc-400 font-normal">Signed Off</span>
-          </p>
-
-          <div className="w-full bg-emerald-100 h-1 rounded-full mt-3 overflow-hidden">
-            <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: totalAssigned > 0 ? `${(completedCount / totalAssigned) * 100}%` : '0%' }} />
-          </div>
+          <p className="text-[11px] text-emerald-600 font-medium mt-1">Finished & signed off</p>
         </div>
       </div>
 

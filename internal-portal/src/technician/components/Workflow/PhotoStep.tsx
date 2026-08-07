@@ -50,16 +50,16 @@ export const PhotoStep: React.FC<PhotoStepProps> = ({
     }
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!caption.trim()) return;
+  const handleUpload = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const finalCaption = caption.trim() || `${type === 'BEFORE' ? 'Before Installation Site Evidence' : 'After Installation Completion Photo'} - ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
     setIsSubmitting(true);
     const chosenUrl = selectedPhoto || sampleImages[photoIndex % sampleImages.length];
     setPhotoIndex((prev) => prev + 1);
 
     try {
-      await onUploadPhoto(job.id, chosenUrl, caption, type);
+      await onUploadPhoto(job.id, chosenUrl, finalCaption, type);
       setCaption('');
       setSelectedPhoto(null);
       if (fileInputRef.current) {
@@ -70,23 +70,30 @@ export const PhotoStep: React.FC<PhotoStepProps> = ({
     }
   };
 
+  const handleContinueStep = async () => {
+    if (selectedPhoto) {
+      await handleUpload();
+    }
+    onNextStep();
+  };
+
   return (
     <div className="space-y-6">
       {/* Photo Uploader Card */}
-      <div className="border border-zinc-200 rounded-xl p-5 bg-white space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-900 flex items-center space-x-2">
-              <Camera className="w-4 h-4 text-zinc-800" />
+      <div className="border border-zinc-200 rounded-xl p-3.5 sm:p-5 bg-white space-y-4">
+        <div className="flex items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-xs sm:text-sm font-semibold text-zinc-900 flex items-center space-x-2">
+              <Camera className="w-4 h-4 text-zinc-800 shrink-0" />
               <span>{type === 'BEFORE' ? 'Before Installation Evidence' : 'After Installation Completion Photos'}</span>
             </h3>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-zinc-500 mt-0.5">
               {type === 'BEFORE'
                 ? 'Upload initial site setup and equipment condition before starting installation work.'
                 : 'Upload finished equipment setup and verified clean workplace evidence.'}
             </p>
           </div>
-          <span className="text-xs font-mono bg-zinc-100 text-zinc-800 px-2.5 py-1 rounded-md font-semibold">
+          <span className="text-xs font-mono bg-zinc-100 text-zinc-800 px-2.5 py-1 rounded-md font-semibold shrink-0 whitespace-nowrap">
             {job.jobCode}
           </span>
         </div>
@@ -144,11 +151,11 @@ export const PhotoStep: React.FC<PhotoStepProps> = ({
 
           <button
             type="submit"
-            disabled={isSubmitting || !caption.trim()}
+            disabled={isSubmitting || (!selectedPhoto && !caption.trim())}
             className="w-full py-2.5 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-2 transition-colors shadow-xs cursor-pointer"
           >
             <Camera className="w-3.5 h-3.5" />
-            <span>Upload {type === 'BEFORE' ? 'Before' : 'After'} Inspection Photo</span>
+            <span>{isSubmitting ? 'Uploading Site Photo...' : `Upload ${type === 'BEFORE' ? 'Before' : 'After'} Inspection Photo`}</span>
           </button>
         </form>
       </div>
@@ -184,10 +191,11 @@ export const PhotoStep: React.FC<PhotoStepProps> = ({
 
       <div className="flex items-center justify-end space-x-3 pt-2">
         <button
-          onClick={onNextStep}
-          className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold rounded-lg flex items-center space-x-2 transition-colors shadow-xs"
+          onClick={handleContinueStep}
+          disabled={isSubmitting}
+          className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white text-xs font-bold rounded-lg flex items-center space-x-2 transition-colors shadow-xs cursor-pointer"
         >
-          <span>Continue Workflow Step</span>
+          <span>{isSubmitting ? 'Uploading & Saving...' : 'Continue Workflow Step'}</span>
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>

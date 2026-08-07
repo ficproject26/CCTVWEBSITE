@@ -188,87 +188,156 @@ export default function Technicians() {
 
       {/* Grid Mode */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {filteredTechnicians.length === 0 ? (
-            <div className="col-span-full py-8 text-center text-slate-450 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 text-xs">
-              No technicians match the active filters.
-            </div>
-          ) : (
-            filteredTechnicians.map((tech, idx) => {
-              const theme = themes[idx % themes.length];
-              return (
-                <div key={tech.id} className={`bg-white dark:bg-slate-900 rounded-xl border-x border-b border-x-slate-100 border-b-slate-100 dark:border-x-slate-800 dark:border-b-slate-800 shadow-xs p-3 flex flex-col justify-between transition-colors ${theme.border}`}>
-                  <div>
-                    {/* Profile header */}
+        <>
+          {/* 📱 Mobile Card View (block md:hidden) - Modern Team List Cards */}
+          <div className="block md:hidden space-y-3">
+            {filteredTechnicians.length === 0 ? (
+              <div className="py-8 text-center text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 text-xs">
+                No technicians match the active filters.
+              </div>
+            ) : (
+              filteredTechnicians.map((tech, idx) => {
+                const theme = themes[idx % themes.length];
+                return (
+                  <div key={`mob-tech-${tech.id}`} className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3.5 space-y-3 shadow-2xs">
+                    {/* Header Row: ID, Rating & Avatar */}
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">{tech.id}</span>
-                      <span className="flex items-center gap-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-200">
-                        <FiStar className="text-amber-400 fill-amber-400 w-3 h-3" /> {tech.rating}
-                      </span>
+                      <div className="flex items-center space-x-3">
+                        <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border border-slate-200">
+                          <img src={getTechAvatar(tech)} alt={tech.name} className="w-full h-full object-cover" />
+                          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-900 ${getStatusColor(tech.status)}`} />
+                        </div>
+                        <div>
+                          <div className="flex items-center space-x-1.5">
+                            <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">{tech.name}</h4>
+                            <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-200/60">
+                              <FiStar className="text-amber-500 fill-amber-500 w-3 h-3" /> {tech.rating}
+                            </span>
+                          </div>
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.specialization}`}>{tech.specialization}</p>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => handleEditTechClick(tech)}
+                        className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer"
+                      >
+                        <FiEdit size={14} />
+                      </button>
                     </div>
 
-                    {/* Name & Specialization */}
-                    <div className="mt-1 text-center">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto relative overflow-hidden">
-                        <img 
-                          src={getTechAvatar(tech)} 
-                          alt={tech.name} 
-                          className="w-full h-full object-cover rounded-full"
-                        />
-                        <span className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white dark:border-slate-900 ${getStatusColor(tech.status)}`} />
-                      </div>
-                      <h4 className="font-bold text-slate-850 dark:text-slate-100 text-xs mt-1 leading-tight">{tech.name}</h4>
-                      <p className={`text-[10px] font-bold mt-0.5 uppercase tracking-wide truncate ${theme.specialization}`}>{tech.specialization}</p>
+                    {/* Contact Info & Job Status */}
+                    <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <p className="truncate">📞 {tech.phone} • ✉️ {tech.email}</p>
+                      <p className="text-[11px] font-medium text-slate-500">
+                        Assigned Job: <strong className={tech.currentProject !== 'None' ? theme.jobText : 'text-slate-700 dark:text-slate-200'}>{tech.currentProject}</strong>
+                      </p>
                     </div>
 
-                    {/* Info Details */}
-                    <div className="mt-2 space-y-1 border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px] text-slate-600 dark:text-slate-300 font-medium text-left">
-                      <div className="flex items-center gap-1.5">
-                        <FiMail className="text-slate-400 w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">{tech.email}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <FiPhone className="text-slate-400 w-3 h-3 flex-shrink-0" />
-                        <span>{tech.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase">JOB:</span>
-                        <span className={`font-semibold truncate text-[11px] ${tech.currentProject !== 'None' ? theme.jobText : 'text-slate-700 dark:text-slate-300'}`}>{tech.currentProject}</span>
-                      </div>
+                    {/* Status Dropdown selector */}
+                    <div className="relative flex items-center pt-1">
+                      <span className={`absolute left-3 w-2 h-2 rounded-full ${getStatusColor(tech.status)}`} />
+                      <select
+                        value={tech.status}
+                        onChange={(e) => handleStatusChange(tech.id, e.target.value)}
+                        className="w-full text-xs pl-7 pr-8 py-2 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl focus:outline-none focus:border-primary appearance-none cursor-pointer font-bold"
+                      >
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                        <option value="Leave">Leave</option>
+                      </select>
+                      <FiChevronDown className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
                     </div>
                   </div>
+                );
+              })
+            )}
+          </div>
 
-                  {/* Actions / Status selector */}
-                  <div className="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2 flex flex-col gap-1.5">
-                    <div className="text-left">
-                      <div className="relative flex items-center">
-                        <span className={`absolute left-2.5 w-1.5 h-1.5 rounded-full ${getStatusColor(tech.status)}`} />
-                        <select
-                          value={tech.status}
-                          onChange={(e) => handleStatusChange(tech.id, e.target.value)}
-                          className="w-full text-[11px] pl-6 pr-6 py-1 border border-slate-200 dark:border-slate-800 bg-transparent dark:bg-slate-800 text-slate-800 dark:text-slate-300 rounded-lg focus:outline-none focus:border-primary appearance-none cursor-pointer font-semibold"
-                        >
-                          <option value="Available">Available</option>
-                          <option value="Busy">Busy</option>
-                          <option value="Offline">Offline</option>
-                          <option value="Leave">Leave</option>
-                        </select>
-                        <FiChevronDown className="absolute right-2.5 w-3 h-3 text-slate-400 pointer-events-none" />
+          {/* 💻 Desktop Grid View (hidden md:grid) */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {filteredTechnicians.length === 0 ? (
+              <div className="col-span-full py-8 text-center text-slate-450 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 text-xs">
+                No technicians match the active filters.
+              </div>
+            ) : (
+              filteredTechnicians.map((tech, idx) => {
+                const theme = themes[idx % themes.length];
+                return (
+                  <div key={tech.id} className={`bg-white dark:bg-slate-900 rounded-xl border-x border-b border-x-slate-100 border-b-slate-100 dark:border-x-slate-800 dark:border-b-slate-800 shadow-xs p-3 flex flex-col justify-between transition-colors ${theme.border}`}>
+                    <div>
+                      {/* Profile header */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">{tech.id}</span>
+                        <span className="flex items-center gap-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-200">
+                          <FiStar className="text-amber-400 fill-amber-400 w-3 h-3" /> {tech.rating}
+                        </span>
+                      </div>
+
+                      {/* Name & Specialization */}
+                      <div className="mt-1 text-center">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto relative overflow-hidden">
+                          <img 
+                            src={getTechAvatar(tech)} 
+                            alt={tech.name} 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                          <span className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white dark:border-slate-900 ${getStatusColor(tech.status)}`} />
+                        </div>
+                        <h4 className="font-bold text-slate-850 dark:text-slate-100 text-xs mt-1 leading-tight">{tech.name}</h4>
+                        <p className={`text-[10px] font-bold mt-0.5 uppercase tracking-wide truncate ${theme.specialization}`}>{tech.specialization}</p>
+                      </div>
+
+                      {/* Info Details */}
+                      <div className="mt-2 space-y-1 border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px] text-slate-600 dark:text-slate-300 font-medium text-left">
+                        <div className="flex items-center gap-1.5">
+                          <FiMail className="text-slate-400 w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">{tech.email}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <FiPhone className="text-slate-400 w-3 h-3 flex-shrink-0" />
+                          <span>{tech.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase">JOB:</span>
+                          <span className={`font-semibold truncate text-[11px] ${tech.currentProject !== 'None' ? theme.jobText : 'text-slate-700 dark:text-slate-300'}`}>{tech.currentProject}</span>
+                        </div>
                       </div>
                     </div>
 
-                    <button 
-                      onClick={() => handleEditTechClick(tech)}
-                      className="w-full flex items-center justify-center gap-1 py-1 px-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-semibold transition-colors"
-                    >
-                      <FiEdit size={11} /> Edit Profile
-                    </button>
+                    {/* Actions / Status selector */}
+                    <div className="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2 flex flex-col gap-1.5">
+                      <div className="text-left">
+                        <div className="relative flex items-center">
+                          <span className={`absolute left-2.5 w-1.5 h-1.5 rounded-full ${getStatusColor(tech.status)}`} />
+                          <select
+                            value={tech.status}
+                            onChange={(e) => handleStatusChange(tech.id, e.target.value)}
+                            className="w-full text-[11px] pl-6 pr-6 py-1 border border-slate-200 dark:border-slate-800 bg-transparent dark:bg-slate-800 text-slate-800 dark:text-slate-300 rounded-lg focus:outline-none focus:border-primary appearance-none cursor-pointer font-semibold"
+                          >
+                            <option value="Available">Available</option>
+                            <option value="Busy">Busy</option>
+                            <option value="Offline">Offline</option>
+                            <option value="Leave">Leave</option>
+                          </select>
+                          <FiChevronDown className="absolute right-2.5 w-3 h-3 text-slate-400 pointer-events-none" />
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => handleEditTechClick(tech)}
+                        className="w-full flex items-center justify-center gap-1 py-1 px-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-semibold transition-colors"
+                      >
+                        <FiEdit size={11} /> Edit Profile
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+                );
+              })
+            )}
+          </div>
+        </>
       ) : (
         /* List Mode - Tabular View */
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
